@@ -1,6 +1,7 @@
 # react-native-android-wifi
 
-A react-native module for viewing and connecting to Wifi networks on Android devices.
+A react-native module for viewing and connecting to Wifi networks on Android devices. 
+Based on ccmxy/react-native-wifi-module
 
 ### Installation
 
@@ -101,7 +102,7 @@ wifi.isEnabled((isEnabled)=>{
 });
 ```
 
-Enable/Disable wifi connectivity:
+Enable/Disable wifi service:
 ```javascript
 //Set TRUE to enable and FALSE to disable; 
 wifi.setEnabled(true);
@@ -114,7 +115,14 @@ wifi.toastAllNetworks();
 
 Sign device into a specific network:
 ```javascript
-wifi.findAndConnect(ssid, password);
+//found returns true if ssid is in the range
+wifi.findAndConnect(ssid, password, (found) => {
+  if (found) {
+    this.setState({wifiInRange:true});
+  }else{
+    this.setState({wifiInRange:false});
+  }
+});
 ```
 
 You can put all wifi networks into a ListView like this:
