@@ -125,9 +125,9 @@ wifi.findAndConnect(ssid, password, (found) => {
 });
 ```
 
-Get SSID from connected network
+Get current SSID
 ```javascript
-getSSID((ssid) => {
+wifi.getSSID((ssid) => {
     this.setState({ssid:ssid});
 });
 ```
