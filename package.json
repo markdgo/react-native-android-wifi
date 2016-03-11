@@ -14,7 +14,7 @@
     "wifi",
     "connection"
   ],
-  "author": "Colleen Minor <windrainicefire@gmail.com>",
+  "author": "Ferran Reventos <devstepbcn@gmail.com>",
   "license": "ISC",
   "repository": "https://github.com/devstepbcn/react-native-android-wifi",
   "bugs": "https://github.com/devstepbcn/react-native-android-wifi/issues",
