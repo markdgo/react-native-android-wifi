@@ -33,7 +33,7 @@ dependencies {
 On newer versions of React Native (0.18+):
 
 ```java
-import com.devstepbcn.WifiManager.*;  // <--- import
+import com.devstepbcn.wifi.AndroidWifiPackage;  // <--- import
 
 public class MainActivity extends ReactActivity {
   ......
@@ -54,7 +54,7 @@ public class MainActivity extends ReactActivity {
 On older versions of React Native:
 
 ```java
-import com.skierkowski.WifiManager.*;  // <--- import
+import com.devstepbcn.wifi.AndroidWifiPackage;  // <--- import
 
 public class MainActivity extends Activity implements DefaultHardwareBackBtnHandler {
   ......
@@ -87,22 +87,22 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
 ### Example usage
 
 ```
-var wifiModule = require('react-native-android-wifi')
+var wifi = require('react-native-android-wifi')
 ```
 
 Toast all networks:
 ```
-wifiModule.toastAllNetworks();
+wifi.toastAllNetworks();
 ```
 
 Sign device into a specific network:
 ```
-wifiModule.findAndConnect(ssid, password);
+wifi.findAndConnect(ssid, password);
 ```
 
 You can put all wifi networks into a ListView like this:
 ```
-wifiModule.loadWifiList((wifiString) => {
+wifi.loadWifiList((wifiString) => {
 var wifiArray = wifiString.split('SSID:');
 this.setState({
   dataSource: this.state.dataSource.cloneWithRows(wifiArray),
@@ -117,21 +117,10 @@ this.setState({
 
 connectionStatus returns true or false depending on whether device is connected to wifi:
 ```
-wifiModule.connectionStatus((isConnected) => {
+wifi.connectionStatus((isConnected) => {
   if (isConnected) {
     //Do something
   }
 },
 ```
 
-
-### Screenshots
-
-* Version of the app which implements RNSimpleAlertDialogModule by lucas ferreira     
-
-
-![Screenshot from a version of this app which implements RNSimpleAlertDialogModule by lucas ferreira](http://i.imgur.com/Es4V0Wk.png)
-
-![Upon connecting](http://i.imgur.com/11G14hw.png)
-
-![3](http://i.imgur.com/QSLSexh.png)
