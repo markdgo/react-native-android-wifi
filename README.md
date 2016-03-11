@@ -125,6 +125,13 @@ wifi.findAndConnect(ssid, password, (found) => {
 });
 ```
 
+Get SSID from connected network
+```javascript
+getSSID((ssid) => {
+    this.setState({ssid:ssid});
+});
+```
+
 You can put all wifi networks into a ListView like this:
 ```javascript
 wifi.loadWifiList((wifiString) => {
