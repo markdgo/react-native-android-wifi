@@ -1,0 +1,25 @@
+{
+  "name": "react-native-android-wifi",
+  "version": "1.0.9",
+  "description": "A react-native connect for viewing and connecting to Wifi networks on Android devices.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "react-component",
+    "react-native",
+    "android",
+    "wifi",
+    "connection"
+  ],
+  "author": "Colleen Minor <windrainicefire@gmail.com>",
+  "license": "ISC",
+  "repository": "https://github.com/devstepbcn/react-native-android-wifi",
+  "bugs": "https://github.com/devstepbcn/react-native-android-wifi/issues",
+  "peerDependencies": {
+    "react-native": ">=0.13"
+  },
+  "dependencies": {}
+}
