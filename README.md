@@ -86,12 +86,12 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
 
 ### Example usage
 
-```
+```javascript
 var wifi = require('react-native-android-wifi')
 ```
 
 Wifi connectivity status:
-```
+```javascript
 wifi.isEnabled((isEnabled)=>{
   if (isEnabled){
     this.setState({status:"wifi service enabled"});
@@ -102,23 +102,23 @@ wifi.isEnabled((isEnabled)=>{
 ```
 
 Enable/Disable wifi connectivity:
-```
+```javascript
 //Set TRUE to enable and FALSE to disable; 
 wifi.setEnabled(true);
 ```
 
 Toast all networks:
-```
+```javascript
 wifi.toastAllNetworks();
 ```
 
 Sign device into a specific network:
-```
+```javascript
 wifi.findAndConnect(ssid, password);
 ```
 
 You can put all wifi networks into a ListView like this:
-```
+```javascript
 wifi.loadWifiList((wifiString) => {
 var wifiArray = wifiString.split('SSID:');
 this.setState({
@@ -133,7 +133,7 @@ this.setState({
  ```
 
 connectionStatus returns true or false depending on whether device is connected to wifi:
-```
+```javascript
 wifi.connectionStatus((isConnected) => {
   if (isConnected) {
     //Do something
