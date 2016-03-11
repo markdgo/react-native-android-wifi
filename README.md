@@ -5,7 +5,7 @@ A react-native module for viewing and connecting to Wifi networks on Android dev
 ### Installation
 
 ```bash
-npm install react-native-wifi-module --save
+npm install react-native-android-wifi --save
 ```
 
 ### Add it to your android project
