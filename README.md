@@ -90,6 +90,23 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
 var wifi = require('react-native-android-wifi')
 ```
 
+Wifi connectivity status:
+```
+wifi.isEnabled((isEnabled)=>{
+  if (isEnabled){
+    this.setState({status:"wifi service enabled"});
+  }else{
+    this.setState({status:"wifi service is disabled"});
+  }
+});
+```
+
+Enable/Disable wifi connectivity:
+```
+//Set TRUE to enable and FALSE to disable; 
+wifi.setEnabled(true);
+```
+
 Toast all networks:
 ```
 wifi.toastAllNetworks();
