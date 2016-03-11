@@ -1,4 +1,4 @@
-# react-native-android-wifi (Android)
+# react-native-android-wifi
 
 A react-native module for viewing and connecting to Wifi networks on Android devices.
 
