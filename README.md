@@ -15,8 +15,8 @@ npm install react-native-android-wifi --save
 
 ```gradle
 ...
-include ':AndroidWifiModule', ':app'
-project(':AndroidWifiModule').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-wifi')
+include ':AndroidWifi', ':app'
+project(':AndroidWifi').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-wifi')
 ```
 
 * In `android/app/build.gradle`
@@ -25,7 +25,7 @@ project(':AndroidWifiModule').projectDir = new File(rootProject.projectDir, '../
 ...
 dependencies {
     ...
-    compile project(':AndroidWifiModule')
+    compile project(':AndroidWifi')
 }
 ```
 
