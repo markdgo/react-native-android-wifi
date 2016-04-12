@@ -108,11 +108,6 @@ Enable/Disable wifi service:
 wifi.setEnabled(true);
 ```
 
-Toast all networks:
-```javascript
-wifi.toastAllNetworks();
-```
-
 Sign device into a specific network:
 ```javascript
 //found returns true if ssid is in the range
@@ -141,7 +136,7 @@ wifiStringList is a stringified JSONArray with the following fields for each sca
   "BSSID": "The address of the access point",
   "capabilities": "Describes the authentication, key management, and encryption schemes supported by the access point"
   "frequency":"The primary 20 MHz frequency (in MHz) of the channel over which the client is communicating with the access point",
-  "level":"The detected signal level in dBm, also known as the RSSI. (Remember its negative)",
+  "level":"The detected signal level in dBm, also known as the RSSI. (Remember its a negative value)",
   "timestamp":"Timestamp in microseconds (since boot) when this result was last seen"
 }
 */
@@ -154,7 +149,7 @@ wifi.loadWifiList((wifiStringList) => {
 );
  ```
 
-connectionStatus returns true or false depending on whether device is connected to wifi:
+connectionStatus returns true or false depending on whether device is connected to wifi
 ```javascript
 wifi.connectionStatus((isConnected) => {
   if (isConnected) {
@@ -165,7 +160,7 @@ wifi.connectionStatus((isConnected) => {
 
 Get connected wifi signal strength
 ```javascript
-//level is the detected signal level in dBm, also known as the RSSI. (Remember its negative)
+//level is the detected signal level in dBm, also known as the RSSI. (Remember its a negative value)
 wifi.getCurrentSignalStrength((level)=>{
   console.log(level);
 });
