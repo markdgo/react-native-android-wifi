@@ -132,19 +132,26 @@ wifi.getSSID((ssid) => {
 });
 ```
 
-You can put all wifi networks into a ListView like this:
+Get all wifi networks in range
 ```javascript
-wifi.loadWifiList((wifiString) => {
-var wifiArray = wifiString.split('SSID:');
-this.setState({
-  dataSource: this.state.dataSource.cloneWithRows(wifiArray),
-     loaded: true,
-     });
- },
- (msg) => {
-     console.log(msg);
-   },
- );
+/*
+wifiStringList is a stringified JSONArray with the following fields for each scanned wifi
+{
+  "SSID": "The network name",
+  "BSSID": "The address of the access point",
+  "capabilities": "Describes the authentication, key management, and encryption schemes supported by the access point"
+  "frequency":"The primary 20 MHz frequency (in MHz) of the channel over which the client is communicating with the access point",
+  "level":"The detected signal level in dBm, also known as the RSSI. (Remember its negative)",
+  "timestamp":"Timestamp in microseconds (since boot) when this result was last seen"
+}
+*/
+wifi.loadWifiList((wifiStringList) => {
+    var wifiArray = JSON.parse(wifiStringList);
+  },
+  (error) => {
+    console.log(error);
+  }
+);
  ```
 
 connectionStatus returns true or false depending on whether device is connected to wifi:
@@ -153,6 +160,14 @@ wifi.connectionStatus((isConnected) => {
   if (isConnected) {
     //Do something
   }
-},
+});
 ```
 
+Get connected wifi signal strength
+```javascript
+//level is the detected signal level in dBm, also known as the RSSI. (Remember its negative)
+wifi.getCurrentSignalStrength((level)=>{
+  console.log(level);
+});
+
+```

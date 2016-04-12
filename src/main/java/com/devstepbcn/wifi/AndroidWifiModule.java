@@ -23,6 +23,10 @@ import android.os.Bundle;
 import android.widget.Toast;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 	//WifiManager Instance
@@ -40,18 +44,36 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		return "AndroidWifiModule";
 	}
 
-	//Method to load wifi list into string via Callback. See index.android.js for an example of how to turn it into a ListView.
+	//Method to load wifi list into string via Callback. Returns a stringified JSONArray
   	@ReactMethod
 	public void loadWifiList(Callback successCallback, Callback errorCallback) {
 		try {
 			List < ScanResult > results = wifi.getScanResults();
-			WritableArray wifiArray =  Arguments.createArray();
+			JSONArray wifiArray = new JSONArray();
+
 			for (ScanResult result: results) {
+				JSONObject wifiObject = new JSONObject();
 				if(!result.SSID.equals("")){
-					wifiArray.pushString(result.SSID);
+					try {
+					    wifiObject.put("SSID", result.SSID);
+					    wifiObject.put("BSSID", result.BSSID);
+					    wifiObject.put("capabilities", result.capabilities);
+					    wifiObject.put("frequency", result.frequency);
+					    wifiObject.put("level", result.level);
+					    wifiObject.put("timestamp", result.timestamp);
+					    //Other fields not added
+					    //wifiObject.put("operatorFriendlyName", result.operatorFriendlyName);
+					    //wifiObject.put("venueName", result.venueName);
+					    //wifiObject.put("centerFreq0", result.centerFreq0);
+					    //wifiObject.put("centerFreq1", result.centerFreq1);
+					    //wifiObject.put("channelWidth", result.channelWidth);
+					} catch (JSONException e) {
+					    errorCallback.invoke(e.getMessage());
+					}
+					wifiArray.put(wifiObject);
 				}
 			}
-			successCallback.invoke(wifiArray);
+			successCallback.invoke(wifiArray.toString());
 		} catch (IllegalViewOperationException e) {
 			errorCallback.invoke(e.getMessage());
 		}
@@ -70,7 +92,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	}
 
 	//Send the ssid and password of a Wifi network into this to connect to the network.
-	//Example:  wifiModule.findAndConnect(ssid, password);
+	//Example:  wifi.findAndConnect(ssid, password);
 	//After 10 seconds, a post telling you whether you are connected will pop up.
 	//Callback returns true if ssid is in the range
  	@ReactMethod
@@ -143,15 +165,6 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		}
 	}
 
-	//This method will show a toast for each Wifi network that is in range.
-	@ReactMethod
-	public void toastAllNetworks() {
-		List < ScanResult > results = wifi.getScanResults();
-		for (ScanResult result: results) {
-			Toast.makeText(getReactApplicationContext(), result.SSID + " " + result.level, Toast.LENGTH_SHORT).show();
-		}
-	}
-
 	//This method will return current ssid
 	@ReactMethod
 	public void getSSID(final Callback callback) {
@@ -165,4 +178,11 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	    
 	    callback.invoke(ssid);
   	}
+
+  	//This method will return current wifi signal strength
+  	@ReactMethod
+	public void getCurrentSignalStrength(final Callback callback) {
+  		int linkSpeed = wifi.getConnectionInfo().getRssi();
+		callback.invoke(linkSpeed);
+	}
 }
