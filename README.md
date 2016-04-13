@@ -5,14 +5,19 @@ Based on ccmxy/react-native-wifi-module
 
 ### Installation
 
+### Add it to your android project
 ```bash
 npm install react-native-android-wifi --save
 ```
 
-### Add it to your android project
+### Install the native dependencies
+You can use rnpm to add native dependencies automatically:
+```bash
+$ rnpm link
+```
+or do it manually as described below:
 
 * In `android/setting.gradle`
-
 ```gradle
 ...
 include ':AndroidWifi', ':app'
