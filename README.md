@@ -119,9 +119,9 @@ Sign device into a specific network:
 //found returns true if ssid is in the range
 wifi.findAndConnect(ssid, password, (found) => {
   if (found) {
-    console.log("ssid is in range");
+    console.log("wifi is in range");
   }else{
-    console.log("ssid is NOT in range");
+    console.log("wifi is not in range");
   }
 });
 ```
@@ -162,7 +162,7 @@ wifi.connectionStatus((isConnected) => {
   if (isConnected) {
       console.log("is connected");
     }else{
-      console.log("is NOT connected");
+      console.log("is not connected");
   }
 });
 ```
