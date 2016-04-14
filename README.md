@@ -121,7 +121,7 @@ wifi.findAndConnect(ssid, password, (found) => {
   if (found) {
     console.log("ssid is in range");
   }else{
-  console.log("ssid is NOT in range");
+    console.log("ssid is NOT in range");
   }
 });
 ```
@@ -129,7 +129,7 @@ wifi.findAndConnect(ssid, password, (found) => {
 Get current SSID
 ```javascript
 wifi.getSSID((ssid) => {
-    console.log(ssid);
+  console.log(ssid);
 });
 ```
 
@@ -147,11 +147,11 @@ wifiStringList is a stringified JSONArray with the following fields for each sca
 }
 */
 wifi.loadWifiList((wifiStringList) => {
-    var wifiArray = JSON.parse(wifiStringList);
-      console.log(wifiArray);
-    },
+  var wifiArray = JSON.parse(wifiStringList);
+    console.log(wifiArray);
+  },
   (error) => {
-      console.log(error);
+    console.log(error);
   }
 );
 ```
@@ -160,9 +160,9 @@ connectionStatus returns true or false depending on whether device is connected 
 ```javascript
 wifi.connectionStatus((isConnected) => {
   if (isConnected) {
-    console.log("is connected");
+      console.log("is connected");
     }else{
-        console.log("is NOT connected");
+      console.log("is NOT connected");
   }
 });
 ```
