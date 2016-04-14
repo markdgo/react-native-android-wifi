@@ -20,8 +20,9 @@ or do it manually as described below:
 * In `android/setting.gradle`
 ```gradle
 ...
-include ':AndroidWifi', ':app'
-project(':AndroidWifi').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-wifi')
+include ':app'
+include ':react-native-android-wifi'
+project(':react-native-android-wifi').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-wifi/android')
 ```
 
 * In `android/app/build.gradle`
@@ -30,7 +31,7 @@ project(':AndroidWifi').projectDir = new File(rootProject.projectDir, '../node_m
 ...
 dependencies {
     ...
-    compile project(':AndroidWifi')
+  compile project(':react-native-android-wifi')
 }
 ```
 
@@ -100,9 +101,9 @@ Wifi connectivity status:
 ```javascript
 wifi.isEnabled((isEnabled)=>{
   if (isEnabled){
-    this.setState({status:"wifi service enabled"});
+    console.log("wifi service enabled");
   }else{
-    this.setState({status:"wifi service is disabled"});
+    console.log("wifi service is disabled");
   }
 });
 ```
@@ -118,9 +119,9 @@ Sign device into a specific network:
 //found returns true if ssid is in the range
 wifi.findAndConnect(ssid, password, (found) => {
   if (found) {
-    this.setState({wifiInRange:true});
+    console.log("ssid is in range");
   }else{
-    this.setState({wifiInRange:false});
+  console.log("ssid is NOT in range");
   }
 });
 ```
@@ -128,7 +129,7 @@ wifi.findAndConnect(ssid, password, (found) => {
 Get current SSID
 ```javascript
 wifi.getSSID((ssid) => {
-    this.setState({ssid:ssid});
+    console.log(ssid);
 });
 ```
 
@@ -147,18 +148,21 @@ wifiStringList is a stringified JSONArray with the following fields for each sca
 */
 wifi.loadWifiList((wifiStringList) => {
     var wifiArray = JSON.parse(wifiStringList);
-  },
+      console.log(wifiArray);
+    },
   (error) => {
-    console.log(error);
+      console.log(error);
   }
 );
- ```
+```
 
 connectionStatus returns true or false depending on whether device is connected to wifi
 ```javascript
 wifi.connectionStatus((isConnected) => {
   if (isConnected) {
-    //Do something
+    console.log("is connected");
+    }else{
+        console.log("is NOT connected");
   }
 });
 ```
@@ -169,5 +173,4 @@ Get connected wifi signal strength
 wifi.getCurrentSignalStrength((level)=>{
   console.log(level);
 });
-
 ```
