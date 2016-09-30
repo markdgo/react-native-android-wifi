@@ -152,7 +152,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		}
 		//Add configuration to Android wifi manager settings...
      	wifi.addNetwork(conf);
-		
+
 		//Enable it so that android can connect
 		List < WifiConfiguration > list = wifi.getConfiguredNetworks();
 		for (WifiConfiguration i: list) {
@@ -169,15 +169,25 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	@ReactMethod
 	public void getSSID(final Callback callback) {
 	    WifiInfo info = wifi.getConnectionInfo();
-	    
+
 	    // This value should be wrapped in double quotes, so we need to unwrap it.
 	    String ssid = info.getSSID();
 	    if (ssid.startsWith("\"") && ssid.endsWith("\"")) {
 	      ssid = ssid.substring(1, ssid.length() - 1);
 	    }
-	    
+
 	    callback.invoke(ssid);
   	}
+
+    //This method will return the basic service set identifier (BSSID) of the current access point
+    @ReactMethod
+    public void getBSSID(final Callback callback) {
+        WifiInfo info = wifi.getConnectionInfo();
+
+        String bssid = info.getBSSID();
+
+        callback.invoke(bssid.toUpperCase());
+    }
 
   	//This method will return current wifi signal strength
   	@ReactMethod
