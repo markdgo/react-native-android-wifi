@@ -133,6 +133,13 @@ wifi.getSSID((ssid) => {
 });
 ```
 
+Get current BSSID
+```javascript
+wifi.getBSSID((bssid) => {
+  console.log(bssid);
+});
+```
+
 Get all wifi networks in range
 ```javascript
 /*
