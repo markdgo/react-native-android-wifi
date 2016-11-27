@@ -195,4 +195,28 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
   		int linkSpeed = wifi.getConnectionInfo().getRssi();
 		callback.invoke(linkSpeed);
 	}
+	//This method will return current IP
+	@ReactMethod
+	public void getIP(final Callback callback) {
+	    WifiInfo info = wifi.getConnectionInfo();	    
+	    String stringip=longToIP(info.getIpAddress());
+	    callback.invoke(stringip);
+  	}
+
+  	public static String longToIP(int longIp){   
+		StringBuffer sb = new StringBuffer("");   
+		String[] strip=new String[4];
+		strip[3]=String.valueOf((longIp >>> 24));
+		strip[2]=String.valueOf((longIp & 0x00FFFFFF) >>> 16);
+		strip[1]=String.valueOf((longIp & 0x0000FFFF) >>> 8);
+		strip[0]=String.valueOf((longIp & 0x000000FF));
+		sb.append(strip[0]);   
+		sb.append(".");   
+		sb.append(strip[1]);   
+		sb.append(".");   
+		sb.append(strip[2]);   
+		sb.append(".");   
+		sb.append(strip[3]);   
+		return sb.toString();   
+	} 
 }
