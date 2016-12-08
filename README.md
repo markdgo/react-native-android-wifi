@@ -126,6 +126,11 @@ wifi.findAndConnect(ssid, password, (found) => {
 });
 ```
 
+Disconnect current wifi network
+```javascript
+wifi.disconnect();
+```
+
 Get current SSID
 ```javascript
 wifi.getSSID((ssid) => {
