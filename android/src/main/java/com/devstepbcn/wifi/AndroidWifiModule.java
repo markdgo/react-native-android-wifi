@@ -146,7 +146,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		for(WifiConfiguration wifiConfig : mWifiConfigList){
 			if(wifiConfig.SSID.equals(comparableSSID)){
 				int networkId = wifiConfig.networkId;
-			  wifi.removeNetwork(networkId);
+			  	wifi.removeNetwork(networkId);
 				wifi.saveConfiguration();
 			}
 		}
@@ -163,6 +163,12 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 				break;
 			}
 		}
+	}
+
+	//Disconnect current Wifi.
+	@ReactMethod
+	public void disconnect() {
+		wifi.disconnect();
 	}
 
 	//This method will return current ssid
