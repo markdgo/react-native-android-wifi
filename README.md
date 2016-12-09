@@ -43,6 +43,7 @@ wifi.setEnabled(true);
 
 Sign device into a specific network:
 > This method doesn't have a callback when connection succeeded, check [this](https://github.com/devstepbcn/react-native-android-wifi/issues/4) issue.
+
 ```javascript
 //found returns true if ssid is in the range
 wifi.findAndConnect(ssid, password, (found) => {
