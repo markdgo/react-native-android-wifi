@@ -31,7 +31,8 @@ export default class Example extends Component {
       wifiList: null,
       modalVisible: false,
       status:null,
-      level: null
+      level: null,
+      ip: null,
     };
   }
   serviceCheckOnPress(){
@@ -91,6 +92,12 @@ export default class Example extends Component {
   levelOnPress(){
     wifi.getCurrentSignalStrength((level)=>{
       this.setState({level:level});
+    });
+  }
+
+  ipOnPress(){
+    wifi.getIP((ip)=>{
+      this.setState({ip:ip});
     });
   }
 
@@ -209,6 +216,15 @@ export default class Example extends Component {
               <Text style={styles.buttonText}>Get signal strength</Text>
             </TouchableHighlight>
             <Text style={styles.answer}>{this.state.level==null?"":this.state.level}</Text>
+          </View>
+        </View>
+        <View style={styles.instructionsContainer}>
+          <Text style={styles.instructionsTitle}>Get current IP</Text>
+          <View style={styles.row}>
+            <TouchableHighlight style={styles.button} onPress={this.ipOnPress.bind(this)}>
+              <Text style={styles.buttonText}>Get IP</Text>
+            </TouchableHighlight>
+            <Text style={styles.answer}>{this.state.ip==null?"":this.state.ip}</Text>
           </View>
         </View>
       </View>
