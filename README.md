@@ -1,7 +1,6 @@
 # react-native-android-wifi
 
-A react-native module for viewing and connecting to Wifi networks on Android devices. 
-Based on ccmxy/react-native-wifi-module
+A react-native module for viewing and connecting to Wifi networks on Android devices.
 
 ### Installation
 
@@ -11,85 +10,11 @@ npm install react-native-android-wifi --save
 ```
 
 ### Install the native dependencies
-You can use rnpm to add native dependencies automatically:
+Use react-native link to install native dependencies automatically:
 ```bash
-$ rnpm link
+$ react-native link
 ```
-or do it manually as described below:
-
-* In `android/setting.gradle`
-```gradle
-...
-include ':app'
-include ':react-native-android-wifi'
-project(':react-native-android-wifi').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-wifi/android')
-```
-
-* In `android/app/build.gradle`
-
-```gradle
-...
-dependencies {
-    ...
-  compile project(':react-native-android-wifi')
-}
-```
-
-* register module (in MainActivity.java)
-
-On newer versions of React Native (0.18+):
-
-```java
-import com.devstepbcn.wifi.AndroidWifiPackage;  // <--- import
-
-public class MainActivity extends ReactActivity {
-  ......
-  
-  /**
-   * A list of packages used by the app. If the app uses additional views
-   * or modules besides the default ones, add more packages here.
-   */
-    @Override
-    protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
-        new AndroidWifiPackage(), // <------ add here
-        new MainReactPackage());
-    }
-}
-```
-
-On older versions of React Native:
-
-```java
-import com.devstepbcn.wifi.AndroidWifiPackage;  // <--- import
-
-public class MainActivity extends Activity implements DefaultHardwareBackBtnHandler {
-  ......
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    mReactRootView = new ReactRootView(this);
-
-    mReactInstanceManager = ReactInstanceManager.builder()
-      .setApplication(getApplication())
-      .setBundleAssetName("index.android.bundle")
-      .setJSMainModuleName("index.android")
-      .addPackage(new MainReactPackage())
-      .addPackage(new AndroidWifiPackage())              // <------ add here
-      .setUseDeveloperSupport(BuildConfig.DEBUG)
-      .setInitialLifecycleState(LifecycleState.RESUMED)
-      .build();
-
-    mReactRootView.startReactApplication(mReactInstanceManager, "ExampleRN", null);
-
-    setContentView(mReactRootView);
-  }
-
-  ......
-
-}
-```
+or do it manually as described [here](docs/link-manually.md).
 
 ### Example usage
 
