@@ -114,3 +114,11 @@ wifi.getCurrentSignalStrength((level)=>{
   console.log(level);
 });
 ```
+
+Get current IP
+```javascript
+//get the current network connection IP
+wifi.getIP((ip)=>{
+  console.log(ip);
+});
+```
