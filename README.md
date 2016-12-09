@@ -2,6 +2,8 @@
 
 A react-native module for viewing and connecting to Wifi networks on Android devices.
 
+![](http://i.imgur.com/B6gZP5l.gif = 300x)
+
 ### Installation
 
 ### Add it to your android project
