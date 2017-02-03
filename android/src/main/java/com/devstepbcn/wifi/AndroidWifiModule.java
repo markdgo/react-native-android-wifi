@@ -33,20 +33,20 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	//WifiManager Instance
 	WifiManager wifi;
 
- 	//Constructor
+	//Constructor
 	public AndroidWifiModule(ReactApplicationContext reactContext) {
 		super(reactContext);
 		wifi = (WifiManager)reactContext.getSystemService(Context.WIFI_SERVICE);
 	}
 
-  	//Name for module register to use:
-  	@Override
+	//Name for module register to use:
+	@Override
 	public String getName() {
 		return "AndroidWifiModule";
 	}
 
 	//Method to load wifi list into string via Callback. Returns a stringified JSONArray
-  	@ReactMethod
+	@ReactMethod
 	public void loadWifiList(Callback successCallback, Callback errorCallback) {
 		try {
 			List < ScanResult > results = wifi.getScanResults();
@@ -56,20 +56,20 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 				JSONObject wifiObject = new JSONObject();
 				if(!result.SSID.equals("")){
 					try {
-					    wifiObject.put("SSID", result.SSID);
-					    wifiObject.put("BSSID", result.BSSID);
-					    wifiObject.put("capabilities", result.capabilities);
-					    wifiObject.put("frequency", result.frequency);
-					    wifiObject.put("level", result.level);
-					    wifiObject.put("timestamp", result.timestamp);
-					    //Other fields not added
-					    //wifiObject.put("operatorFriendlyName", result.operatorFriendlyName);
-					    //wifiObject.put("venueName", result.venueName);
-					    //wifiObject.put("centerFreq0", result.centerFreq0);
-					    //wifiObject.put("centerFreq1", result.centerFreq1);
-					    //wifiObject.put("channelWidth", result.channelWidth);
+						wifiObject.put("SSID", result.SSID);
+						wifiObject.put("BSSID", result.BSSID);
+						wifiObject.put("capabilities", result.capabilities);
+						wifiObject.put("frequency", result.frequency);
+						wifiObject.put("level", result.level);
+						wifiObject.put("timestamp", result.timestamp);
+						//Other fields not added
+						//wifiObject.put("operatorFriendlyName", result.operatorFriendlyName);
+						//wifiObject.put("venueName", result.venueName);
+						//wifiObject.put("centerFreq0", result.centerFreq0);
+						//wifiObject.put("centerFreq1", result.centerFreq1);
+						//wifiObject.put("channelWidth", result.channelWidth);
 					} catch (JSONException e) {
-					    errorCallback.invoke(e.getMessage());
+						errorCallback.invoke(e.getMessage());
 					}
 					wifiArray.put(wifiObject);
 				}
@@ -96,10 +96,10 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	//Example:  wifi.findAndConnect(ssid, password);
 	//After 10 seconds, a post telling you whether you are connected will pop up.
 	//Callback returns true if ssid is in the range
- 	@ReactMethod
+	@ReactMethod
 	public void findAndConnect(String ssid, String password, Callback ssidFound) {
 		List < ScanResult > results = wifi.getScanResults();
-    boolean connected = false;
+		boolean connected = false;
 		for (ScanResult result: results) {
 			String resultString = "" + result.SSID;
 			if (ssid.equals(resultString)) {
@@ -142,68 +142,73 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		//Remove the existing configuration for this netwrok
 		List<WifiConfiguration> mWifiConfigList = wifi.getConfiguredNetworks();
 		String comparableSSID = ('"' + ssid + '"'); //Add quotes because wifiConfig.SSID has them
+		int updateNetwork = -1;
 		for(WifiConfiguration wifiConfig : mWifiConfigList){
 			if(wifiConfig.SSID.equals(comparableSSID)){
-        System.out.println( "wifiConfig <<<<<<<<<<<<<<<<<" );
-        System.out.println( wifiConfig );
-				int networkId = wifiConfig.networkId;
-			  boolean removeNetworkResult = wifi.removeNetwork(networkId);
-        System.out.println( "removeNetworkResult @@@@@@@@@@@@@" ) ;
-        System.out.println( removeNetworkResult ) ;
+				System.out.println( "wifiConfig <<<<<<<<<<<<<<<<<" );
+				System.out.println( wifiConfig );
+				conf.networkId = wifiConfig.networkId;
+				updateNetwork = wifi.updateNetwork(conf);
+				System.out.println( "updateNetwork @@@@@@@@@@@@@" );
+				System.out.println( updateNetwork );
 				// wifi.saveConfiguration();
 			}
 		}
 
-    System.out.println( "conf <<<<<<<<<<<<<<<<<" );
-    System.out.println( conf );
+		if ( updateNetwork == -1 ) {
+			return false;
+		};
 
-		//Add configuration to Android wifi manager settings...
-    int newNetworkID = wifi.addNetwork(conf);
-    System.out.println( "newNetworkID ##############" );
-    System.out.println( newNetworkID );
+		System.out.println( "conf <<<<<<<<<<<<<<<<<" );
+		System.out.println( conf );
 
-    if ( newNetworkID == -1 ) {
-      return false;
-    };
+//		//Add configuration to Android wifi manager settings...
+//		int newNetworkID = wifi.addNetwork(conf);
+//		System.out.println( "newNetworkID ##############" );
+//		System.out.println( newNetworkID );
+//
+//		if ( newNetworkID == -1 ) {
+//			return false;
+//		};
 
-    boolean disconnent = wifi.disconnect();
-    System.out.println( "disconnent -----------------" );
-    System.out.println( disconnent );
+		boolean disconnent = wifi.disconnect();
+		System.out.println( "disconnent -----------------" );
+		System.out.println( disconnent );
 		if ( !disconnent ) {
-      return false;
-    };
+			return false;
+		};
 
-		boolean enableNetwork = wifi.enableNetwork(newNetworkID, true);
-    System.out.println( "enableNetwork ~~~~~~~~~~~~~~" );
-    System.out.println( enableNetwork );
-    if ( !enableNetwork ) {
-      return false;
-    };
+		boolean enableNetwork = wifi.enableNetwork(updateNetwork, true);
+		System.out.println( "enableNetwork ~~~~~~~~~~~~~~" );
+		System.out.println( enableNetwork );
+		if ( !enableNetwork ) {
+			return false;
+		};
 
 		boolean reconnect = wifi.reconnect();
-    System.out.println( "reconnect xxxxxxxxxxxxxxxxx" );
-    System.out.println( reconnect );
-    if ( !reconnect ) {
-      return false;
-    };
+		System.out.println( "reconnect xxxxxxxxxxxxxxxxx" );
+		System.out.println( reconnect );
+		if ( !reconnect ) {
+			return false;
+		};
 
-    // for(int i=0; i<10; i++){
-    //   try {
-    //       Thread.sleep(5000);
-    //   } catch(InterruptedException ex) {
-    //       Thread.currentThread().interrupt();
-    //   }
-    //   ConnectivityManager connManager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-    //   NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-    //   boolean isConnected = mWifi.isConnected();
-    //   System.out.println( "isConnected >>>>>>>>>>>>>>>>>>" );
-    //   System.out.println( isConnected );
-    //   if (!isConnected) {
-    //     return false;
-    //   };
-    // }
+		// for(int i=0; i<10; i++){
+		//   try {
+		//       Thread.sleep(5000);
+		//   } catch(InterruptedException ex) {
+		//       Thread.currentThread().interrupt();
+		//   }
+		//   ConnectivityManager connManager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+		//   NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		//   boolean isConnected = mWifi.isConnected();
+		//   System.out.println( "isConnected >>>>>>>>>>>>>>>>>>" );
+		//   System.out.println( isConnected );
+		//   if (!isConnected) {
+		//     return false;
+		//   };
+		// }
 
-    return true;
+		return true;
 
 	}
 
@@ -216,42 +221,42 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	//This method will return current ssid
 	@ReactMethod
 	public void getSSID(final Callback callback) {
-	    WifiInfo info = wifi.getConnectionInfo();
+		WifiInfo info = wifi.getConnectionInfo();
 
-	    // This value should be wrapped in double quotes, so we need to unwrap it.
-	    String ssid = info.getSSID();
-	    if (ssid.startsWith("\"") && ssid.endsWith("\"")) {
-	      ssid = ssid.substring(1, ssid.length() - 1);
-	    }
+		// This value should be wrapped in double quotes, so we need to unwrap it.
+		String ssid = info.getSSID();
+		if (ssid.startsWith("\"") && ssid.endsWith("\"")) {
+			ssid = ssid.substring(1, ssid.length() - 1);
+		}
 
-	    callback.invoke(ssid);
-  	}
+		callback.invoke(ssid);
+	}
 
-    //This method will return the basic service set identifier (BSSID) of the current access point
-    @ReactMethod
-    public void getBSSID(final Callback callback) {
-        WifiInfo info = wifi.getConnectionInfo();
+	//This method will return the basic service set identifier (BSSID) of the current access point
+	@ReactMethod
+	public void getBSSID(final Callback callback) {
+		WifiInfo info = wifi.getConnectionInfo();
 
-        String bssid = info.getBSSID();
+		String bssid = info.getBSSID();
 
-        callback.invoke(bssid.toUpperCase());
-    }
+		callback.invoke(bssid.toUpperCase());
+	}
 
-  	//This method will return current wifi signal strength
-  	@ReactMethod
+	//This method will return current wifi signal strength
+	@ReactMethod
 	public void getCurrentSignalStrength(final Callback callback) {
-  		int linkSpeed = wifi.getConnectionInfo().getRssi();
+		int linkSpeed = wifi.getConnectionInfo().getRssi();
 		callback.invoke(linkSpeed);
 	}
 	//This method will return current IP
 	@ReactMethod
 	public void getIP(final Callback callback) {
-	    WifiInfo info = wifi.getConnectionInfo();
-	    String stringip=longToIP(info.getIpAddress());
-	    callback.invoke(stringip);
-  	}
+		WifiInfo info = wifi.getConnectionInfo();
+		String stringip=longToIP(info.getIpAddress());
+		callback.invoke(stringip);
+	}
 
-  	public static String longToIP(int longIp){
+	public static String longToIP(int longIp){
 		StringBuffer sb = new StringBuffer("");
 		String[] strip=new String[4];
 		strip[3]=String.valueOf((longIp >>> 24));
