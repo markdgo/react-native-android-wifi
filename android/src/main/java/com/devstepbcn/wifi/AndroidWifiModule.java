@@ -22,6 +22,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.widget.Toast;
 import java.util.List;
+import java.lang.Thread;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,15 +99,14 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
  	@ReactMethod
 	public void findAndConnect(String ssid, String password, Callback ssidFound) {
 		List < ScanResult > results = wifi.getScanResults();
-		Boolean found = false;
+    boolean connected = false;
 		for (ScanResult result: results) {
 			String resultString = "" + result.SSID;
 			if (ssid.equals(resultString)) {
-				found=true;
-				connectTo(result, password, ssid);
+				connected = connectTo(result, password, ssid);
 			}
 		}
-		ssidFound.invoke(found);
+		ssidFound.invoke(connected);
 	}
 
 	//Use this method to check if the device is currently connected to Wifi.
@@ -116,14 +116,13 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 		if (mWifi.isConnected()) {
 			connectionStatusResult.invoke(true);
-		}
-		if (!mWifi.isConnected()) {
+		} else {
 			connectionStatusResult.invoke(false);
 		}
 	}
 
 	//Method to connect to WIFI Network
-	public void connectTo(ScanResult result, String password, String ssid) {
+	public Boolean connectTo(ScanResult result, String password, String ssid) {
 		//Make new configuration
 		WifiConfiguration conf = new WifiConfiguration();
 		conf.SSID = "\"" + ssid + "\"";
@@ -145,24 +144,67 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		String comparableSSID = ('"' + ssid + '"'); //Add quotes because wifiConfig.SSID has them
 		for(WifiConfiguration wifiConfig : mWifiConfigList){
 			if(wifiConfig.SSID.equals(comparableSSID)){
+        System.out.println( "wifiConfig <<<<<<<<<<<<<<<<<" );
+        System.out.println( wifiConfig );
 				int networkId = wifiConfig.networkId;
-			  	wifi.removeNetwork(networkId);
-				wifi.saveConfiguration();
+			  boolean removeNetworkResult = wifi.removeNetwork(networkId);
+        System.out.println( "removeNetworkResult @@@@@@@@@@@@@" ) ;
+        System.out.println( removeNetworkResult ) ;
+				// wifi.saveConfiguration();
 			}
 		}
-		//Add configuration to Android wifi manager settings...
-     	wifi.addNetwork(conf);
 
-		//Enable it so that android can connect
-		List < WifiConfiguration > list = wifi.getConfiguredNetworks();
-		for (WifiConfiguration i: list) {
-			if (i.SSID != null && i.SSID.equals("\"" + ssid + "\"")) {
-				wifi.disconnect();
-				wifi.enableNetwork(i.networkId, true);
-				wifi.reconnect();
-				break;
-			}
-		}
+    System.out.println( "conf <<<<<<<<<<<<<<<<<" );
+    System.out.println( conf );
+
+		//Add configuration to Android wifi manager settings...
+    int newNetworkID = wifi.addNetwork(conf);
+    System.out.println( "newNetworkID ##############" );
+    System.out.println( newNetworkID );
+
+    if ( newNetworkID == -1 ) {
+      return false;
+    };
+
+    boolean disconnent = wifi.disconnect();
+    System.out.println( "disconnent -----------------" );
+    System.out.println( disconnent );
+		if ( !disconnent ) {
+      return false;
+    };
+
+		boolean enableNetwork = wifi.enableNetwork(newNetworkID, true);
+    System.out.println( "enableNetwork ~~~~~~~~~~~~~~" );
+    System.out.println( enableNetwork );
+    if ( !enableNetwork ) {
+      return false;
+    };
+
+		boolean reconnect = wifi.reconnect();
+    System.out.println( "reconnect xxxxxxxxxxxxxxxxx" );
+    System.out.println( reconnect );
+    if ( !reconnect ) {
+      return false;
+    };
+
+    // for(int i=0; i<10; i++){
+    //   try {
+    //       Thread.sleep(5000);
+    //   } catch(InterruptedException ex) {
+    //       Thread.currentThread().interrupt();
+    //   }
+    //   ConnectivityManager connManager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    //   NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+    //   boolean isConnected = mWifi.isConnected();
+    //   System.out.println( "isConnected >>>>>>>>>>>>>>>>>>" );
+    //   System.out.println( isConnected );
+    //   if (!isConnected) {
+    //     return false;
+    //   };
+    // }
+
+    return true;
+
 	}
 
 	//Disconnect current Wifi.
@@ -204,25 +246,26 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	//This method will return current IP
 	@ReactMethod
 	public void getIP(final Callback callback) {
-	    WifiInfo info = wifi.getConnectionInfo();	    
+	    WifiInfo info = wifi.getConnectionInfo();
 	    String stringip=longToIP(info.getIpAddress());
 	    callback.invoke(stringip);
   	}
 
-  	public static String longToIP(int longIp){   
-		StringBuffer sb = new StringBuffer("");   
+  	public static String longToIP(int longIp){
+		StringBuffer sb = new StringBuffer("");
 		String[] strip=new String[4];
 		strip[3]=String.valueOf((longIp >>> 24));
 		strip[2]=String.valueOf((longIp & 0x00FFFFFF) >>> 16);
 		strip[1]=String.valueOf((longIp & 0x0000FFFF) >>> 8);
 		strip[0]=String.valueOf((longIp & 0x000000FF));
-		sb.append(strip[0]);   
-		sb.append(".");   
-		sb.append(strip[1]);   
-		sb.append(".");   
-		sb.append(strip[2]);   
-		sb.append(".");   
-		sb.append(strip[3]);   
-		return sb.toString();   
-	} 
+		sb.append(strip[0]);
+		sb.append(".");
+		sb.append(strip[1]);
+		sb.append(".");
+		sb.append(strip[2]);
+		sb.append(".");
+		sb.append(strip[3]);
+		return sb.toString();
+	}
 }
+
