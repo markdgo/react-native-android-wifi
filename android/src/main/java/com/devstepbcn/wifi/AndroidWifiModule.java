@@ -155,9 +155,14 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 			}
 		}
 
+    // If network not already in configured networks add new network
 		if ( updateNetwork == -1 ) {
-			return false;
+      updateNetwork = wifi.addNetwork(conf);
 		};
+
+    if ( updateNetwork == -1 ) {
+      return false;
+    }
 
 		System.out.println( "conf <<<<<<<<<<<<<<<<<" );
 		System.out.println( conf );
@@ -171,12 +176,12 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 //			return false;
 //		};
 
-		boolean disconnent = wifi.disconnect();
-		System.out.println( "disconnent -----------------" );
-		System.out.println( disconnent );
-		if ( !disconnent ) {
-			return false;
-		};
+		// boolean disconnent = wifi.disconnect();
+		// System.out.println( "disconnent -----------------" );
+		// System.out.println( disconnent );
+		// if ( !disconnent ) {
+		// 	return false;
+		// };
 
 		boolean enableNetwork = wifi.enableNetwork(updateNetwork, true);
 		System.out.println( "enableNetwork ~~~~~~~~~~~~~~" );
