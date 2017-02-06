@@ -145,13 +145,8 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		int updateNetwork = -1;
 		for(WifiConfiguration wifiConfig : mWifiConfigList){
 			if(wifiConfig.SSID.equals(comparableSSID)){
-				System.out.println( "wifiConfig <<<<<<<<<<<<<<<<<" );
-				System.out.println( wifiConfig );
 				conf.networkId = wifiConfig.networkId;
 				updateNetwork = wifi.updateNetwork(conf);
-				System.out.println( "updateNetwork @@@@@@@@@@@@@" );
-				System.out.println( updateNetwork );
-				// wifi.saveConfiguration();
 			}
 		}
 
@@ -164,57 +159,12 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
       return false;
     }
 
-		System.out.println( "conf <<<<<<<<<<<<<<<<<" );
-		System.out.println( conf );
-
-//		//Add configuration to Android wifi manager settings...
-//		int newNetworkID = wifi.addNetwork(conf);
-//		System.out.println( "newNetworkID ##############" );
-//		System.out.println( newNetworkID );
-//
-//		if ( newNetworkID == -1 ) {
-//			return false;
-//		};
-
-		// boolean disconnent = wifi.disconnect();
-		// System.out.println( "disconnent -----------------" );
-		// System.out.println( disconnent );
-		// if ( !disconnent ) {
-		// 	return false;
-		// };
-
 		boolean enableNetwork = wifi.enableNetwork(updateNetwork, true);
-		System.out.println( "enableNetwork ~~~~~~~~~~~~~~" );
-		System.out.println( enableNetwork );
 		if ( !enableNetwork ) {
 			return false;
 		};
 
-		boolean reconnect = wifi.reconnect();
-		System.out.println( "reconnect xxxxxxxxxxxxxxxxx" );
-		System.out.println( reconnect );
-		if ( !reconnect ) {
-			return false;
-		};
-
-		// for(int i=0; i<10; i++){
-		//   try {
-		//       Thread.sleep(5000);
-		//   } catch(InterruptedException ex) {
-		//       Thread.currentThread().interrupt();
-		//   }
-		//   ConnectivityManager connManager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-		//   NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-		//   boolean isConnected = mWifi.isConnected();
-		//   System.out.println( "isConnected >>>>>>>>>>>>>>>>>>" );
-		//   System.out.println( isConnected );
-		//   if (!isConnected) {
-		//     return false;
-		//   };
-		// }
-
 		return true;
-
 	}
 
 	//Disconnect current Wifi.
