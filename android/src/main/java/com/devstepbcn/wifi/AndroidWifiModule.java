@@ -19,6 +19,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.content.Context;
+
 import android.os.Bundle;
 import android.widget.Toast;
 import java.util.List;
@@ -56,20 +57,20 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 				JSONObject wifiObject = new JSONObject();
 				if(!result.SSID.equals("")){
 					try {
-                                            wifiObject.put("SSID", result.SSID);
-                                            wifiObject.put("BSSID", result.BSSID);
-                                            wifiObject.put("capabilities", result.capabilities);
-                                            wifiObject.put("frequency", result.frequency);
-                                            wifiObject.put("level", result.level);
-                                            wifiObject.put("timestamp", result.timestamp);
-                                            //Other fields not added
-                                            //wifiObject.put("operatorFriendlyName", result.operatorFriendlyName);
-                                            //wifiObject.put("venueName", result.venueName);
-                                            //wifiObject.put("centerFreq0", result.centerFreq0);
-                                            //wifiObject.put("centerFreq1", result.centerFreq1);
-                                            //wifiObject.put("channelWidth", result.channelWidth);
+            wifiObject.put("SSID", result.SSID);
+            wifiObject.put("BSSID", result.BSSID);
+            wifiObject.put("capabilities", result.capabilities);
+            wifiObject.put("frequency", result.frequency);
+            wifiObject.put("level", result.level);
+            wifiObject.put("timestamp", result.timestamp);
+            //Other fields not added
+            //wifiObject.put("operatorFriendlyName", result.operatorFriendlyName);
+            //wifiObject.put("venueName", result.venueName);
+            //wifiObject.put("centerFreq0", result.centerFreq0);
+            //wifiObject.put("centerFreq1", result.centerFreq1);
+            //wifiObject.put("channelWidth", result.channelWidth);
 					} catch (JSONException e) {
-                                            errorCallback.invoke(e.getMessage());
+          	errorCallback.invoke(e.getMessage());
 					}
 					wifiArray.put(wifiObject);
 				}
@@ -216,6 +217,22 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		callback.invoke(stringip);
 	}
 
+	//This method will remove the wifi network as per the passed SSID from the device list
+	@ReactMethod
+	public void isRemoveWifiNetwork(String ssid, final Callback callback) {
+    List<WifiConfiguration> mWifiConfigList = wifi.getConfiguredNetworks();
+    for (WifiConfiguration wifiConfig : mWifiConfigList) {
+				String comparableSSID = ('"' + ssid + '"'); //Add quotes because wifiConfig.SSID has them
+				if(wifiConfig.SSID.equals(comparableSSID)) {
+					wifi.removeNetwork(wifiConfig.networkId);
+					wifi.saveConfiguration();
+					callback.invoke(true);
+					return;
+				}
+    }
+		callback.invoke(false);
+	}
+
 	public static String longToIP(int longIp){
 		StringBuffer sb = new StringBuffer("");
 		String[] strip=new String[4];
@@ -233,4 +250,3 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		return sb.toString();
 	}
 }
-
