@@ -235,13 +235,6 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		callback.invoke(false);
 	}
 
-	@ReactMethod
-	public void reScanAndLoadWifiList(Callback successCallback, Callback errorCallback) {
-		WifiReceiver receiverWifi = new WifiReceiver(wifi, successCallback, errorCallback);
-   	getReactApplicationContext().getCurrentActivity().registerReceiver(receiverWifi, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-    wifi.startScan();
-	}
-
 	public static String longToIP(int longIp){
 		StringBuffer sb = new StringBuffer("");
 		String[] strip=new String[4];
@@ -258,48 +251,4 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		sb.append(strip[3]);
 		return sb.toString();
 	}
-
-	class WifiReceiver extends BroadcastReceiver {
-
-			private Callback successCallback;
-			private Callback errorCallback;
-			private WifiManager wifi;
-
-			public WifiReceiver(final WifiManager wifi, Callback successCallback, Callback errorCallback) {
-				super();
-				this.successCallback = successCallback;
-				this.errorCallback = errorCallback;
-				this.wifi = wifi;
- 			}
-
-			// This method call when number of wifi connections changed
-      public void onReceive(Context c, Intent intent) {
-				LocalBroadcastManager.getInstance(c).unregisterReceiver(this);
-				// c.unregisterReceiver(this);
-				try {
-					List < ScanResult > results = this.wifi.getScanResults();
-					JSONArray wifiArray = new JSONArray();
-
-					for (ScanResult result: results) {
-						JSONObject wifiObject = new JSONObject();
-						if(!result.SSID.equals("")){
-							try {
-		            wifiObject.put("SSID", result.SSID);
-		            wifiObject.put("BSSID", result.BSSID);
-		            wifiObject.put("capabilities", result.capabilities);
-		            wifiObject.put("frequency", result.frequency);
-		            wifiObject.put("level", result.level);
-		            wifiObject.put("timestamp", result.timestamp);
-							} catch (JSONException e) {
-		          	this.errorCallback.invoke(e.getMessage());
-							}
-							wifiArray.put(wifiObject);
-						}
-					}
-					this.successCallback.invoke(wifiArray.toString());
-				} catch (IllegalViewOperationException e) {
-					this.errorCallback.invoke(e.getMessage());
-				}
-      }
-  }
 }
