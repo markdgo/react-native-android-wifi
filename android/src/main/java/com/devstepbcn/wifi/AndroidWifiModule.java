@@ -4,7 +4,7 @@ import com.facebook.react.uimanager.*;
 import com.facebook.react.bridge.*;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-import com.facebook.react.LifecycleState;
+// import com.facebook.react.LifecycleState;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -235,6 +235,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		callback.invoke(false);
 	}
 
+	// This method is similar to `loadWifiList` but it forcefully starts the wifi scanning on android and in the callback fetches the list
 	@ReactMethod
 	public void reScanAndLoadWifiList(Callback successCallback, Callback errorCallback) {
 		WifiReceiver receiverWifi = new WifiReceiver(wifi, successCallback, errorCallback);
@@ -274,8 +275,9 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 			// This method call when number of wifi connections changed
       public void onReceive(Context c, Intent intent) {
-				LocalBroadcastManager.getInstance(c).unregisterReceiver(this);
-				// c.unregisterReceiver(this);
+				// LocalBroadcastManager.getInstance(c).unregisterReceiver(this);
+				c.unregisterReceiver(this);
+				// getReactApplicationContext().getCurrentActivity().registerReceiver
 				try {
 					List < ScanResult > results = this.wifi.getScanResults();
 					JSONArray wifiArray = new JSONArray();
@@ -292,13 +294,16 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		            wifiObject.put("timestamp", result.timestamp);
 							} catch (JSONException e) {
 		          	this.errorCallback.invoke(e.getMessage());
+								return;
 							}
 							wifiArray.put(wifiObject);
 						}
 					}
 					this.successCallback.invoke(wifiArray.toString());
+					return;
 				} catch (IllegalViewOperationException e) {
 					this.errorCallback.invoke(e.getMessage());
+					return;
 				}
       }
   }
