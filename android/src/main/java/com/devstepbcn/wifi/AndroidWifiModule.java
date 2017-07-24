@@ -4,7 +4,7 @@ import com.facebook.react.uimanager.*;
 import com.facebook.react.bridge.*;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-import com.facebook.react.LifecycleState;
+// import com.facebook.react.LifecycleState;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -19,7 +19,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.content.Context;
-
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
 import android.os.Bundle;
 import android.widget.Toast;
 import java.util.List;
@@ -233,6 +235,14 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		callback.invoke(false);
 	}
 
+	// This method is similar to `loadWifiList` but it forcefully starts the wifi scanning on android and in the callback fetches the list
+	@ReactMethod
+	public void reScanAndLoadWifiList(Callback successCallback, Callback errorCallback) {
+		WifiReceiver receiverWifi = new WifiReceiver(wifi, successCallback, errorCallback);
+   	getReactApplicationContext().getCurrentActivity().registerReceiver(receiverWifi, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+    wifi.startScan();
+	}
+
 	public static String longToIP(int longIp){
 		StringBuffer sb = new StringBuffer("");
 		String[] strip=new String[4];
@@ -249,4 +259,52 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		sb.append(strip[3]);
 		return sb.toString();
 	}
+
+	class WifiReceiver extends BroadcastReceiver {
+
+			private Callback successCallback;
+			private Callback errorCallback;
+			private WifiManager wifi;
+
+			public WifiReceiver(final WifiManager wifi, Callback successCallback, Callback errorCallback) {
+				super();
+				this.successCallback = successCallback;
+				this.errorCallback = errorCallback;
+				this.wifi = wifi;
+ 			}
+
+			// This method call when number of wifi connections changed
+      public void onReceive(Context c, Intent intent) {
+				// LocalBroadcastManager.getInstance(c).unregisterReceiver(this);
+				c.unregisterReceiver(this);
+				// getReactApplicationContext().getCurrentActivity().registerReceiver
+				try {
+					List < ScanResult > results = this.wifi.getScanResults();
+					JSONArray wifiArray = new JSONArray();
+
+					for (ScanResult result: results) {
+						JSONObject wifiObject = new JSONObject();
+						if(!result.SSID.equals("")){
+							try {
+		            wifiObject.put("SSID", result.SSID);
+		            wifiObject.put("BSSID", result.BSSID);
+		            wifiObject.put("capabilities", result.capabilities);
+		            wifiObject.put("frequency", result.frequency);
+		            wifiObject.put("level", result.level);
+		            wifiObject.put("timestamp", result.timestamp);
+							} catch (JSONException e) {
+		          	this.errorCallback.invoke(e.getMessage());
+								return;
+							}
+							wifiArray.put(wifiObject);
+						}
+					}
+					this.successCallback.invoke(wifiArray.toString());
+					return;
+				} catch (IllegalViewOperationException e) {
+					this.errorCallback.invoke(e.getMessage());
+					return;
+				}
+      }
+  }
 }
