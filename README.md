@@ -123,3 +123,18 @@ wifi.getIP((ip)=>{
   console.log(ip);
 });
 ```
+
+Remove/Forget the Wifi network from mobile by SSID, returns boolean
+``` javascript
+wifi.isRemoveWifiNetwork(ssid, (isRemoved) => {
+  console.log("Forgetting the wifi device - " + ssid);
+});
+```
+
+Starts native Android wifi network scanning and returns list
+``` javascript
+wifi.reScanAndLoadWifiList((wifiStringList) => {
+  var wifiArray = JSON.parse(wifiStringList);
+  console.log('Detected wifi networks - ',wifiArray);
+});
+```
