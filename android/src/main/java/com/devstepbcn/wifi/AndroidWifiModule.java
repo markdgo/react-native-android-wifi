@@ -128,41 +128,73 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	public Boolean connectTo(ScanResult result, String password, String ssid) {
 		//Make new configuration
 		WifiConfiguration conf = new WifiConfiguration();
-		conf.SSID = "\"" + ssid + "\"";
-		String Capabilities = result.capabilities;
-		if (Capabilities.contains("WPA2")) {
-			conf.preSharedKey = "\"" + password + "\"";
-		} else if (Capabilities.contains("WPA")) {
-			conf.preSharedKey = "\"" + password + "\"";
-		} else if (Capabilities.contains("WEP")) {
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        conf.SSID = ssid;
+    } else {
+        conf.SSID = "\"" + ssid + "\"";
+    }
+
+		String capabilities = result.capabilities;
+		
+		if (capabilities.contains("WPA")  || 
+          capabilities.contains("WPA2") || 
+          capabilities.contains("WPA/WPA2 PSK")) {
+
+	    // appropriate ciper is need to set according to security type used,
+	    // ifcase of not added it will not be able to connect
+	    conf.preSharedKey = "\"" + password + "\"";
+	    
+	    conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+	    
+	    conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+	    
+	    conf.status = WifiConfiguration.Status.ENABLED;
+	    
+	    conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+	    conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+	    
+	    conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+	    
+	    conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+	    conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+	    
+	    conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+	    conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+
+		}	else if (capabilities.contains("WEP")) {
 			conf.wepKeys[0] = "\"" + password + "\"";
 			conf.wepTxKeyIndex = 0;
 			conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 			conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+
 		} else {
 			conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 		}
+
 		//Remove the existing configuration for this netwrok
 		List<WifiConfiguration> mWifiConfigList = wifi.getConfiguredNetworks();
-		String comparableSSID = ('"' + ssid + '"'); //Add quotes because wifiConfig.SSID has them
+
 		int updateNetwork = -1;
+
 		for(WifiConfiguration wifiConfig : mWifiConfigList){
-			if(wifiConfig.SSID.equals(comparableSSID)){
+			if(wifiConfig.SSID.equals(conf.SSID)){
 				conf.networkId = wifiConfig.networkId;
 				updateNetwork = wifi.updateNetwork(conf);
 			}
 		}
 
-                // If network not already in configured networks add new network
+    // If network not already in configured networks add new network
 		if ( updateNetwork == -1 ) {
-                        updateNetwork = wifi.addNetwork(conf);
+      updateNetwork = wifi.addNetwork(conf);
+      wifi.saveConfiguration();
 		};
 
-                if ( updateNetwork == -1 ) {
-                  return false;
-                }
+    if ( updateNetwork == -1 ) {
+      return false;
+    }
 
-                boolean disconnect = wifi.disconnect();
+    boolean disconnect = wifi.disconnect();
 		if ( !disconnect ) {
 			return false;
 		};
