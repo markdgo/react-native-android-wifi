@@ -1,4 +1,5 @@
 package com.devstepbcn.wifi;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,12 +18,14 @@ public class AndroidWifiPackage implements ReactPackage {
     modules.add(new AndroidWifiModule(reactContext));
     return modules;
   }
-  @Override
+
+  // This method is kept for RN < 0.47 compatibility
   public List<Class<? extends JavaScriptModule>> createJSModules() {
-      return Collections.emptyList();
+    return Collections.emptyList();
   }
+
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-      return Arrays.<ViewManager>asList();
+    return Arrays.<ViewManager>asList();
   }
 }
