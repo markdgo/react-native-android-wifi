@@ -244,11 +244,20 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		int linkSpeed = wifi.getConnectionInfo().getRssi();
 		callback.invoke(linkSpeed);
 	}
+
+	//This method will return current wifi frequency
+	@ReactMethod
+	public void getFrequency(final Callback callback) {
+		WifiInfo info = wifi.getConnectionInfo();
+		int frequency = info.getFrequency();
+		callback.invoke(frequency);
+	}
+
 	//This method will return current IP
 	@ReactMethod
 	public void getIP(final Callback callback) {
 		WifiInfo info = wifi.getConnectionInfo();
-		String stringip=longToIP(info.getIpAddress());
+		String stringip = longToIP(info.getIpAddress());
 		callback.invoke(stringip);
 	}
 
