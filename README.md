@@ -26,10 +26,10 @@ var wifi = require('react-native-android-wifi')
 
 Wifi connectivity status:
 ```javascript
-wifi.isEnabled((isEnabled)=>{
-  if (isEnabled){
+wifi.isEnabled((isEnabled) => {
+  if (isEnabled) {
     console.log("wifi service enabled");
-  }else{
+  } else {
     console.log("wifi service is disabled");
   }
 });
@@ -49,7 +49,7 @@ Sign device into a specific network:
 wifi.findAndConnect(ssid, password, (found) => {
   if (found) {
     console.log("wifi is in range");
-  }else{
+  } else {
     console.log("wifi is not in range");
   }
 });
@@ -102,7 +102,7 @@ connectionStatus returns true or false depending on whether device is connected 
 wifi.connectionStatus((isConnected) => {
   if (isConnected) {
       console.log("is connected");
-    }else{
+    } else {
       console.log("is not connected");
   }
 });
@@ -111,15 +111,22 @@ wifi.connectionStatus((isConnected) => {
 Get connected wifi signal strength
 ```javascript
 //level is the detected signal level in dBm, also known as the RSSI. (Remember its a negative value)
-wifi.getCurrentSignalStrength((level)=>{
+wifi.getCurrentSignalStrength((level) => {
   console.log(level);
 });
+```
+
+Get connected wifi frequency
+```javascript
+wifi.getFrequency((frequency) => {
+  console.log(frequency);
+})
 ```
 
 Get current IP
 ```javascript
 //get the current network connection IP
-wifi.getIP((ip)=>{
+wifi.getIP((ip) => {
   console.log(ip);
 });
 ```
