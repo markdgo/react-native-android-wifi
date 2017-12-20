@@ -151,7 +151,4 @@ This method to force wifi usage, Android by default, sends all requests via mobi
 //It receives a boolean to enable forceWifiUsage if true, and disable if false. 
 //Is important to enable only when communicating with the device via wifi
 //and remember to disable it when disconnecting from device.
-wifi.reScanAndLoadWifiList((wifiStringList) => {
-  var wifiArray = JSON.parse(wifiStringList);
-  console.log('Detected wifi networks - ',wifiArray);
-});
+wifi.forceWifiUsage(true);
