@@ -84,6 +84,75 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		}
 	}
 
+	//Method to force wifi usage if the user needs to send requests via wifi
+	//if it does not have internet connection. Useful for IoT applications, when
+	//the app needs to communicate and send requests to a device that have no 
+	//internet connection via wifi.
+
+	//Receives a boolean to enable forceWifiUsage if true, and disable if false.
+	//Is important to enable only when communicating with the device via wifi 
+	//and remember to disable it when disconnecting from device.
+	@ReactMethod
+	public void forceWifiUsage(boolean useWifi) {
+        boolean canWriteFlag = false;
+		
+        if (useWifi) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    canWriteFlag = Settings.System.canWrite(context);
+
+                    if (!canWriteFlag) {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                        intent.setData(Uri.parse("package:" + context.getPackageName()));
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                        context.startActivity(intent);
+                    }
+
+                }
+
+
+                if (((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && canWriteFlag) || ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) && !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M))) {
+                    final ConnectivityManager manager = (ConnectivityManager) context
+                            .getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkRequest.Builder builder;
+                    builder = new NetworkRequest.Builder();
+                    //set the transport type do WIFI
+                    builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+
+
+                    manager.requestNetwork(builder.build(), new ConnectivityManager.NetworkCallback() {
+                        @Override
+                        public void onAvailable(Network network) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                manager.bindProcessToNetwork(network);
+                            } else {
+                                //This method was deprecated in API level 23
+                                ConnectivityManager.setProcessDefaultNetwork(network);
+                            }
+                            try {
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            manager.unregisterNetworkCallback(this);
+                        }
+                    });
+                }
+
+
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                ConnectivityManager manager = (ConnectivityManager) context
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+                manager.bindProcessToNetwork(null);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ConnectivityManager.setProcessDefaultNetwork(null);
+            }
+        }
+    }
+
 	//Method to check if wifi is enabled
 	@ReactMethod
 	public void isEnabled(Callback isEnabled) {
