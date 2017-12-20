@@ -146,9 +146,9 @@ wifi.reScanAndLoadWifiList((wifiStringList) => {
 });
 ```
 
-This method to force wifi usage, Android by default, sends all requests via mobile data if the connected wifi has no internet connection.
+Method to force wifi usage. Android by default sends all requests via mobile data if the connected wifi has no internet connection.
 ``` javascript
-//It receives a boolean to enable forceWifiUsage if true, and disable if false. 
+//Set true/false to enable/disable forceWifiUsage.
 //Is important to enable only when communicating with the device via wifi
 //and remember to disable it when disconnecting from device.
 wifi.forceWifiUsage(true);
