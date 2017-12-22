@@ -12,11 +12,16 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
+import android.provider.Settings;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.NetworkRequest;
+import android.net.NetworkCapabilities;
+import android.net.Network;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.content.Context;
 import android.content.Intent;
@@ -36,11 +41,13 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 	//WifiManager Instance
 	WifiManager wifi;
+	ReactApplicationContext context;
 
 	//Constructor
 	public AndroidWifiModule(ReactApplicationContext reactContext) {
 		super(reactContext);
 		wifi = (WifiManager)reactContext.getSystemService(Context.WIFI_SERVICE);
+		context = (ReactApplicationContext) getReactApplicationContext();
 	}
 
 	//Name for module register to use:
