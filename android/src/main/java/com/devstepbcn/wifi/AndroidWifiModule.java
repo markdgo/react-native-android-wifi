@@ -12,6 +12,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
+import android.os.Build;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiConfiguration;
@@ -35,11 +36,13 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 	//WifiManager Instance
 	WifiManager wifi;
+	ReactApplicationContext reactContext;
 
 	//Constructor
 	public AndroidWifiModule(ReactApplicationContext reactContext) {
 		super(reactContext);
 		wifi = (WifiManager)reactContext.getSystemService(Context.WIFI_SERVICE);
+		this.reactContext = reactContext;
 	}
 
 	//Name for module register to use:
@@ -125,15 +128,32 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	}
 
 	//Method to connect to WIFI Network
-	public Boolean connectTo(ScanResult result, String password, String ssid) {
+		public Boolean connectTo(ScanResult result, String password, String ssid) {
 		//Make new configuration
 		WifiConfiguration conf = new WifiConfiguration();
+
+		conf.allowedAuthAlgorithms.clear();
+		conf.allowedGroupCiphers.clear();
+		conf.allowedKeyManagement.clear();
+		conf.allowedPairwiseCiphers.clear();
+		conf.allowedProtocols.clear();
+
+		conf.SSID = String.format("\"%s\"", ssid);
+    conf.preSharedKey = String.format("\"%s\"", password);
 		
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        conf.SSID = ssid;
-    } else {
-        conf.SSID = "\"" + ssid + "\"";
-    }
+		// if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+	  //     conf.SSID = ssid;
+	  //     conf.preSharedKey = password;
+	  // } else {
+	  //     conf.SSID = "\"" + ssid + "\"";
+	  //     conf.preSharedKey = "\"" + password + "\"";
+	  // }
+
+
+    WifiConfiguration tempConfig = this.IsExist(conf.SSID);
+		if (tempConfig != null) {
+			wifi.removeNetwork(tempConfig.networkId);
+		}
 
 		String capabilities = result.capabilities;
 		
@@ -143,28 +163,31 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 	    // appropriate ciper is need to set according to security type used,
 	    // ifcase of not added it will not be able to connect
-	    conf.preSharedKey = "\"" + password + "\"";
+	    // conf.preSharedKey = "\"" + password + "\"";
 	    
-	    conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+	    // This is needed for WPA/WPA2 
+	  	// Reference - https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/wifi/java/android/net/wifi/WifiConfiguration.java#149
+	    conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
 	    
-	    conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-	    
-	    conf.status = WifiConfiguration.Status.ENABLED;
-	    
-	    conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
 	    conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+	    conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
 	    
 	    conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 	    
-	    conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
 	    conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+	    conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
 	    
 	    conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
 	    conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-
+	    conf.status = WifiConfiguration.Status.ENABLED;
 		}	else if (capabilities.contains("WEP")) {
 			conf.wepKeys[0] = "\"" + password + "\"";
 			conf.wepTxKeyIndex = 0;
+			// This is needed for WEP
+			// Reference - https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/wifi/java/android/net/wifi/WifiConfiguration.java#149
+			conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+			conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
+			
 			conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 			conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
 
@@ -180,7 +203,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		for(WifiConfiguration wifiConfig : mWifiConfigList){
 			if(wifiConfig.SSID.equals(conf.SSID)){
 				conf.networkId = wifiConfig.networkId;
-				updateNetwork = wifi.updateNetwork(conf);
+				updateNetwork = conf.networkId;
 			}
 		}
 
@@ -188,7 +211,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		if ( updateNetwork == -1 ) {
       updateNetwork = wifi.addNetwork(conf);
       wifi.saveConfiguration();
-		};
+		}
 
     if ( updateNetwork == -1 ) {
       return false;
@@ -197,12 +220,12 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
     boolean disconnect = wifi.disconnect();
 		if ( !disconnect ) {
 			return false;
-		};
+		}
 
 		boolean enableNetwork = wifi.enableNetwork(updateNetwork, true);
 		if ( !enableNetwork ) {
 			return false;
-		};
+		}
 
 		return true;
 	}
@@ -254,25 +277,24 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	//This method will remove the wifi network as per the passed SSID from the device list
 	@ReactMethod
 	public void isRemoveWifiNetwork(String ssid, final Callback callback) {
-    List<WifiConfiguration> mWifiConfigList = wifi.getConfiguredNetworks();
-    for (WifiConfiguration wifiConfig : mWifiConfigList) {
-				String comparableSSID = ('"' + ssid + '"'); //Add quotes because wifiConfig.SSID has them
-				if(wifiConfig.SSID.equals(comparableSSID)) {
-					wifi.removeNetwork(wifiConfig.networkId);
-					wifi.saveConfiguration();
-					callback.invoke(true);
-					return;
-				}
-    }
+	    List<WifiConfiguration> mWifiConfigList = wifi.getConfiguredNetworks();
+	    for (WifiConfiguration wifiConfig : mWifiConfigList) {
+					String comparableSSID = ('"' + ssid + '"'); //Add quotes because wifiConfig.SSID has them
+					if(wifiConfig.SSID.equals(comparableSSID)) {
+						wifi.removeNetwork(wifiConfig.networkId);
+						wifi.saveConfiguration();
+						callback.invoke(true);
+						return;
+					}
+	    }
 		callback.invoke(false);
 	}
 
-	// This method is similar to `loadWifiList` but it forcefully starts the wifi scanning on android and in the callback fetches the list
 	@ReactMethod
 	public void reScanAndLoadWifiList(Callback successCallback, Callback errorCallback) {
 		WifiReceiver receiverWifi = new WifiReceiver(wifi, successCallback, errorCallback);
-   	getReactApplicationContext().getCurrentActivity().registerReceiver(receiverWifi, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-    wifi.startScan();
+	   	getReactApplicationContext().getCurrentActivity().registerReceiver(receiverWifi, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+	    wifi.startScan();
 	}
 
 	public static String longToIP(int longIp){
@@ -290,6 +312,16 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		sb.append(".");
 		sb.append(strip[3]);
 		return sb.toString();
+	}
+
+	private WifiConfiguration IsExist(String SSID) {
+		List<WifiConfiguration> existingConfigs = wifi.getConfiguredNetworks();
+		for (WifiConfiguration existingConfig : existingConfigs) {
+			if (existingConfig.SSID.equals("\"" + SSID + "\"")) {
+				return existingConfig;
+			}
+		}
+		return null;
 	}
 
 	class WifiReceiver extends BroadcastReceiver {
