@@ -6,7 +6,6 @@
 
 import React, { Component } from 'react';
 import {
-  AppRegistry,
   Modal,
   StyleSheet,
   Text,
@@ -16,11 +15,12 @@ import {
   View
 } from 'react-native';
 
-var wifi = require('react-native-android-wifi');
+import wifi from 'react-native-android-wifi';
 
-export default class Example extends Component {
-
-  componentWillMount(){
+type Props = {};
+export default class App extends Component<Props> {
+  constructor(props){
+    super(props);
     this.state = {
       isWifiNetworkEnabled: null,
       ssid: null,
@@ -289,5 +289,3 @@ const styles = StyleSheet.create({
     marginTop: 5,
   }
 });
-
-AppRegistry.registerComponent('Example', () => Example);

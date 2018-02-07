@@ -21,7 +21,7 @@ or do it manually as described [here](docs/link-manually.md).
 ### Example usage
 
 ```javascript
-var wifi = require('react-native-android-wifi')
+import wifi from 'react-native-android-wifi';
 ```
 
 Wifi connectivity status:
