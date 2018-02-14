@@ -9,7 +9,7 @@
   "dependencies": {
     "react": "16.2.0",
     "react-native": "0.53.0",
-    "react-native-android-wifi": "0.0.24"
+    "react-native-android-wifi": "0.0.25"
   },
   "devDependencies": {
     "babel-jest": "22.2.0",
