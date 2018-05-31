@@ -24,7 +24,7 @@ or do it manually as described [here](docs/link-manually.md).
 import wifi from 'react-native-android-wifi';
 ```
 
-Ask for user permisions in order to get wifi list
+Ask for user permissions in order to get wifi list
 ```javascript
 try {
       const granted = await PermissionsAndroid.request(
