@@ -81,6 +81,8 @@ wifi.disconnect();
 ```
 
 Get current SSID
+
+Starting with Android 8.1 (API 27), apps must be granted the ACCESS_COARSE_LOCATION (or ACCESS_FINE_LOCATION) permission in order to obtain results from getSSID().
 ```javascript
 wifi.getSSID((ssid) => {
   console.log(ssid);
@@ -88,6 +90,8 @@ wifi.getSSID((ssid) => {
 ```
 
 Get current BSSID
+
+Starting with Android 8.1 (API 27), apps must be granted the ACCESS_COARSE_LOCATION (or ACCESS_FINE_LOCATION) permission in order to obtain results from getBSSID().
 ```javascript
 wifi.getBSSID((bssid) => {
   console.log(bssid);
