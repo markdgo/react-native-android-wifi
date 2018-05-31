@@ -12,7 +12,8 @@ import {
   TextInput,
   TouchableHighlight,
   ScrollView,
-  View
+  View,
+  PermissionsAndroid
 } from 'react-native';
 
 import wifi from 'react-native-android-wifi';
@@ -34,7 +35,33 @@ export default class App extends Component<Props> {
       level: null,
       ip: null,
     };
+
   }
+
+  componentDidMount (){
+    console.log(wifi);
+    this.askForUserPermissions();
+  }
+
+  async askForUserPermissions() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          'title': 'Wifi networks',
+          'message': 'We need your permission in order to find wifi networks'
+        }
+      )
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Thank you for your permission! :)");
+      } else {
+        console.log("You will not able to retrieve wifi available networks list");
+      }
+    } catch (err) {
+      console.warn(err)
+    }
+  }
+
   serviceCheckOnPress(){
     wifi.isEnabled(
       (isEnabled)=>{
@@ -71,6 +98,7 @@ export default class App extends Component<Props> {
 
   getWifiNetworksOnPress(){
     wifi.loadWifiList((wifiStringList) => {
+        console.log(wifiStringList);
         var wifiArray = JSON.parse(wifiStringList);
         this.setState({
           wifiList:wifiArray,
