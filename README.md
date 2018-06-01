@@ -24,8 +24,7 @@ or do it manually as described [here](docs/link-manually.md).
 import wifi from 'react-native-android-wifi';
 ```
 
-##Permissions
-Starting with Android API 25, apps must be granted the ACCESS_COARSE_LOCATION (or ACCESS_FINE_LOCATION) permission in order to obtain results.
+Permissions: Starting with Android API 25, apps must be granted the ACCESS_COARSE_LOCATION (or ACCESS_FINE_LOCATION) permission in order to obtain results.
 ```javascript
 try {
       const granted = await PermissionsAndroid.request(
