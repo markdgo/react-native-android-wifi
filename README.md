@@ -24,7 +24,7 @@ or do it manually as described [here](docs/link-manually.md).
 import wifi from 'react-native-android-wifi';
 ```
 
-Permissions
+##Permissions
 Starting with Android API 25, apps must be granted the ACCESS_COARSE_LOCATION (or ACCESS_FINE_LOCATION) permission in order to obtain results.
 ```javascript
 try {
@@ -82,7 +82,6 @@ wifi.disconnect();
 ```
 
 Get current SSID
-
 ```javascript
 wifi.getSSID((ssid) => {
   console.log(ssid);
@@ -90,7 +89,6 @@ wifi.getSSID((ssid) => {
 ```
 
 Get current BSSID
-
 ```javascript
 wifi.getBSSID((bssid) => {
   console.log(bssid);
@@ -162,7 +160,6 @@ wifi.isRemoveWifiNetwork(ssid, (isRemoved) => {
 ```
 
 Starts native Android wifi network scanning and returns list
-Starting with Android 8.1 (API 27), apps must be granted the ACCESS_COARSE_LOCATION (or ACCESS_FINE_LOCATION) permission in order to obtain results from getBSSID().
 ``` javascript
 wifi.reScanAndLoadWifiList((wifiStringList) => {
   var wifiArray = JSON.parse(wifiStringList);
