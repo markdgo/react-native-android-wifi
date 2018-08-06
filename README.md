@@ -4,6 +4,11 @@ A react-native module for viewing and connecting to Wifi networks on Android dev
 
 ![example app](/docs/example-app.gif)
 
+### Updates added in this repo
+1. Added a new method `isRemoveWifiNetwork` - This method will remove the wifi network as per the passed SSID from the device list.
+2. Added a new method `reScanAndLoadWifiList` - Hard refresh the Android wifi scan, implemented using `BroadcastReceiver` to ensure that it automatically detects new wifi connections available.
+3. Adding support for 'WPA2 PSK' wifi security mode and handling SSID for Lollipop and Kitkat.
+
 ### Installation
 
 ### Add it to your android project
