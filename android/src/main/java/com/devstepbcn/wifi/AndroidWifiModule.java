@@ -364,6 +364,13 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	    wifi.startScan();
 	}
 
+	@ReactMethod
+	public void getDhcpServerAddress(Callback callback) {
+		DhcpInfo dhcpInfo = wifi.getDhcpInfo();
+		String ip = longToIP(dhcpInfo.serverAddress);
+		callback.invoke(ip);
+	}
+
 	public static String longToIP(int longIp){
 		StringBuffer sb = new StringBuffer("");
 		String[] strip=new String[4];
@@ -408,7 +415,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
       	public void onReceive(Context c, Intent intent) {
 			
 			c.unregisterReceiver(this);
-			
+
 			try {
 				List < ScanResult > results = this.wifi.getScanResults();
 				JSONArray wifiArray = new JSONArray();

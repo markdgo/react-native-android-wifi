@@ -151,6 +151,13 @@ wifi.getIP((ip) => {
   console.log(ip);
 });
 ```
+Get DHCP Server Adress
+```javascript
+//get the DHCP server IP
+wifi.getDhcpServerAddress((ip) => {
+  console.log(ip);
+});
+```
 
 Remove/Forget the Wifi network from mobile by SSID, returns boolean
 This method will remove the wifi network as per the passed SSID from the device list.
