@@ -4,7 +4,6 @@ import com.facebook.react.uimanager.*;
 import com.facebook.react.bridge.*;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-// import com.facebook.react.LifecycleState;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -67,20 +66,20 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 				JSONObject wifiObject = new JSONObject();
 				if(!result.SSID.equals("")){
 					try {
-            wifiObject.put("SSID", result.SSID);
-            wifiObject.put("BSSID", result.BSSID);
-            wifiObject.put("capabilities", result.capabilities);
-            wifiObject.put("frequency", result.frequency);
-            wifiObject.put("level", result.level);
-            wifiObject.put("timestamp", result.timestamp);
-            //Other fields not added
-            //wifiObject.put("operatorFriendlyName", result.operatorFriendlyName);
-            //wifiObject.put("venueName", result.venueName);
-            //wifiObject.put("centerFreq0", result.centerFreq0);
-            //wifiObject.put("centerFreq1", result.centerFreq1);
-            //wifiObject.put("channelWidth", result.channelWidth);
+			            wifiObject.put("SSID", result.SSID);
+			            wifiObject.put("BSSID", result.BSSID);
+			            wifiObject.put("capabilities", result.capabilities);
+			            wifiObject.put("frequency", result.frequency);
+			            wifiObject.put("level", result.level);
+			            wifiObject.put("timestamp", result.timestamp);
+			            //Other fields not added
+			            //wifiObject.put("operatorFriendlyName", result.operatorFriendlyName);
+			            //wifiObject.put("venueName", result.venueName);
+			            //wifiObject.put("centerFreq0", result.centerFreq0);
+			            //wifiObject.put("centerFreq1", result.centerFreq1);
+			            //wifiObject.put("channelWidth", result.channelWidth);
 					} catch (JSONException e) {
-          	errorCallback.invoke(e.getMessage());
+          				errorCallback.invoke(e.getMessage());
 					}
 					wifiArray.put(wifiObject);
 				}
@@ -116,9 +115,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
                         context.startActivity(intent);
                     }
-
                 }
-
 
                 if (((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && canWriteFlag) || ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) && !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M))) {
                     final ConnectivityManager manager = (ConnectivityManager) context
@@ -146,8 +143,6 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
                         }
                     });
                 }
-
-
             }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -206,56 +201,54 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		//Make new configuration
 		WifiConfiguration conf = new WifiConfiguration();
 
-    //clear alloweds
+    	//clear alloweds
 		conf.allowedAuthAlgorithms.clear();
 		conf.allowedGroupCiphers.clear();
 		conf.allowedKeyManagement.clear();
 		conf.allowedPairwiseCiphers.clear();
 		conf.allowedProtocols.clear();
 
-    // Quote ssid and password
+    	// Quote ssid and password
 		conf.SSID = String.format("\"%s\"", ssid);
-    conf.preSharedKey = String.format("\"%s\"", password);
+    	conf.preSharedKey = String.format("\"%s\"", password);
 	
-    WifiConfiguration tempConfig = this.IsExist(conf.SSID);
+    	WifiConfiguration tempConfig = this.IsExist(conf.SSID);
 		if (tempConfig != null) {
 			wifi.removeNetwork(tempConfig.networkId);
 		}
 
 		String capabilities = result.capabilities;
 		
-    // appropriate ciper is need to set according to security type used
-		if (capabilities.contains("WPA")  || 
-        capabilities.contains("WPA2") || 
-        capabilities.contains("WPA/WPA2 PSK")) {
+    	// appropriate ciper is need to set according to security type used
+		if (capabilities.contains("WPA") || capabilities.contains("WPA2") || capabilities.contains("WPA/WPA2 PSK")) {
 
-	        // This is needed for WPA/WPA2 
-	  	    // Reference - https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/wifi/java/android/net/wifi/WifiConfiguration.java#149
-          conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+			// This is needed for WPA/WPA2 
+			// Reference - https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/wifi/java/android/net/wifi/WifiConfiguration.java#149
+			conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
 
-          conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-          conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+			conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+			conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
 
-          conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+			conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 
-          conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-          conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+			conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+			conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
 
-          conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-          conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-          conf.status = WifiConfiguration.Status.ENABLED;
+			conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+			conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+			conf.status = WifiConfiguration.Status.ENABLED;
       
-		}	else if (capabilities.contains("WEP")) {
-        // This is needed for WEP
-        // Reference - https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/wifi/java/android/net/wifi/WifiConfiguration.java#149
-        conf.wepKeys[0] = "\"" + password + "\"";
-        conf.wepTxKeyIndex = 0;
-        conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-        conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-    } else {
-				conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+		} else if (capabilities.contains("WEP")) {
+			// This is needed for WEP
+			// Reference - https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/wifi/java/android/net/wifi/WifiConfiguration.java#149
+			conf.wepKeys[0] = "\"" + password + "\"";
+			conf.wepTxKeyIndex = 0;
+			conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+			conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
+			conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+			conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+    	} else {
+			conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 		}
 
 		List<WifiConfiguration> mWifiConfigList = wifi.getConfiguredNetworks();
@@ -264,29 +257,29 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		// Use the existing network config if exists
 		for (WifiConfiguration wifiConfig : mWifiConfigList) {
 			if (wifiConfig.SSID.equals(conf.SSID)) {
-        conf=wifiConfig;
+        		conf=wifiConfig;
 				updateNetwork=conf.networkId;
 			}
 		}
 
 		// If network not already in configured networks add new network
 		if ( updateNetwork == -1 ) {
-      updateNetwork = wifi.addNetwork(conf);
-      wifi.saveConfiguration();
+	      updateNetwork = wifi.addNetwork(conf);
+	      wifi.saveConfiguration();
 		}
 
-    // if network not added return false
+    	// if network not added return false
 		if ( updateNetwork == -1 ) {
 			return false;
 		}
 
-    // disconnect current network
+    	// disconnect current network
 		boolean disconnect = wifi.disconnect();
 		if ( !disconnect ) {
 			return false;
 		}
 
-    // enable new network
+   		// enable new network
 		boolean enableNetwork = wifi.enableNetwork(updateNetwork, true);
 		if ( !enableNetwork ) {
 			return false;
@@ -353,13 +346,13 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	public void isRemoveWifiNetwork(String ssid, final Callback callback) {
 	    List<WifiConfiguration> mWifiConfigList = wifi.getConfiguredNetworks();
 	    for (WifiConfiguration wifiConfig : mWifiConfigList) {
-					String comparableSSID = ('"' + ssid + '"'); //Add quotes because wifiConfig.SSID has them
-					if(wifiConfig.SSID.equals(comparableSSID)) {
-						wifi.removeNetwork(wifiConfig.networkId);
-						wifi.saveConfiguration();
-						callback.invoke(true);
-						return;
-					}
+			String comparableSSID = ('"' + ssid + '"'); //Add quotes because wifiConfig.SSID has them
+			if(wifiConfig.SSID.equals(comparableSSID)) {
+				wifi.removeNetwork(wifiConfig.networkId);
+				wifi.saveConfiguration();
+				callback.invoke(true);
+				return;
+			}
 	    }
 		callback.invoke(false);
 	}
@@ -400,50 +393,50 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 	class WifiReceiver extends BroadcastReceiver {
 
-			private Callback successCallback;
-			private Callback errorCallback;
-			private WifiManager wifi;
+		private Callback successCallback;
+		private Callback errorCallback;
+		private WifiManager wifi;
 
-			public WifiReceiver(final WifiManager wifi, Callback successCallback, Callback errorCallback) {
-				super();
-				this.successCallback = successCallback;
-				this.errorCallback = errorCallback;
-				this.wifi = wifi;
- 			}
+		public WifiReceiver(final WifiManager wifi, Callback successCallback, Callback errorCallback) {
+			super();
+			this.successCallback = successCallback;
+			this.errorCallback = errorCallback;
+			this.wifi = wifi;
+		}
 
-			// This method call when number of wifi connections changed
-      public void onReceive(Context c, Intent intent) {
-				// LocalBroadcastManager.getInstance(c).unregisterReceiver(this);
-				c.unregisterReceiver(this);
-				// getReactApplicationContext().getCurrentActivity().registerReceiver
-				try {
-					List < ScanResult > results = this.wifi.getScanResults();
-					JSONArray wifiArray = new JSONArray();
+		// This method call when number of wifi connections changed
+      	public void onReceive(Context c, Intent intent) {
+			
+			c.unregisterReceiver(this);
+			
+			try {
+				List < ScanResult > results = this.wifi.getScanResults();
+				JSONArray wifiArray = new JSONArray();
 
-					for (ScanResult result: results) {
-						JSONObject wifiObject = new JSONObject();
-						if(!result.SSID.equals("")){
-							try {
-		            wifiObject.put("SSID", result.SSID);
-		            wifiObject.put("BSSID", result.BSSID);
-		            wifiObject.put("capabilities", result.capabilities);
-		            wifiObject.put("frequency", result.frequency);
-		            wifiObject.put("level", result.level);
-		            wifiObject.put("timestamp", result.timestamp);
-							} catch (JSONException e) {
-		          	this.errorCallback.invoke(e.getMessage());
-								return;
-							}
-							wifiArray.put(wifiObject);
+				for (ScanResult result: results) {
+					JSONObject wifiObject = new JSONObject();
+					if(!result.SSID.equals("")){
+						try {
+				            wifiObject.put("SSID", result.SSID);
+				            wifiObject.put("BSSID", result.BSSID);
+				            wifiObject.put("capabilities", result.capabilities);
+				            wifiObject.put("frequency", result.frequency);
+				            wifiObject.put("level", result.level);
+				            wifiObject.put("timestamp", result.timestamp);
+						} catch (JSONException e) {
+	          				this.errorCallback.invoke(e.getMessage());
+							return;
 						}
+						wifiArray.put(wifiObject);
 					}
-					this.successCallback.invoke(wifiArray.toString());
-					return;
-				} catch (IllegalViewOperationException e) {
-					this.errorCallback.invoke(e.getMessage());
-					return;
 				}
-      }
-  }
+				this.successCallback.invoke(wifiArray.toString());
+				return;
+			} catch (IllegalViewOperationException e) {
+				this.errorCallback.invoke(e.getMessage());
+				return;
+			}
+		}
+	}
 }
 
