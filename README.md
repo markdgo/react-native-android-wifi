@@ -14,7 +14,7 @@ npm install react-native-android-wifi --save
 ### Install the native dependencies
 Use react-native link to install native dependencies automatically:
 ```bash
-react-native link
+react-native link react-native-android-wifi
 ```
 or do it manually as described [here](docs/link-manually.md).
 
