@@ -26,15 +26,35 @@ or do it manually as described [here](docs/link-manually.md).
 ### Example usage
 
 ```javascript
-var wifi = require('react-native-android-wifi')
+import wifi from 'react-native-android-wifi';
+```
+
+Permissions: Starting with Android API 25, apps must be granted the ACCESS_COARSE_LOCATION (or ACCESS_FINE_LOCATION) permission in order to obtain results.
+```javascript
+try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          'title': 'Wifi networks',
+          'message': 'We need your permission in order to find wifi networks'
+        }
+      )
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Thank you for your permission! :)");
+      } else {
+        console.log("You will not able to retrieve wifi available networks list");
+      }
+    } catch (err) {
+      console.warn(err)
+    }
 ```
 
 Wifi connectivity status:
 ```javascript
-wifi.isEnabled((isEnabled)=>{
-  if (isEnabled){
+wifi.isEnabled((isEnabled) => {
+  if (isEnabled) {
     console.log("wifi service enabled");
-  }else{
+  } else {
     console.log("wifi service is disabled");
   }
 });
@@ -54,7 +74,7 @@ Sign device into a specific network:
 wifi.findAndConnect(ssid, password, (found) => {
   if (found) {
     console.log("wifi is in range");
-  }else{
+  } else {
     console.log("wifi is not in range");
   }
 });
@@ -107,7 +127,7 @@ connectionStatus returns true or false depending on whether device is connected 
 wifi.connectionStatus((isConnected) => {
   if (isConnected) {
       console.log("is connected");
-    }else{
+    } else {
       console.log("is not connected");
   }
 });
@@ -116,15 +136,22 @@ wifi.connectionStatus((isConnected) => {
 Get connected wifi signal strength
 ```javascript
 //level is the detected signal level in dBm, also known as the RSSI. (Remember its a negative value)
-wifi.getCurrentSignalStrength((level)=>{
+wifi.getCurrentSignalStrength((level) => {
   console.log(level);
 });
+```
+
+Get connected wifi frequency
+```javascript
+wifi.getFrequency((frequency) => {
+  console.log(frequency);
+})
 ```
 
 Get current IP
 ```javascript
 //get the current network connection IP
-wifi.getIP((ip)=>{
+wifi.getIP((ip) => {
   console.log(ip);
 });
 ```
@@ -143,3 +170,10 @@ wifi.reScanAndLoadWifiList((wifiStringList) => {
   console.log('Detected wifi networks - ',wifiArray);
 });
 ```
+
+Method to force wifi usage. Android by default sends all requests via mobile data if the connected wifi has no internet connection.
+``` javascript
+//Set true/false to enable/disable forceWifiUsage.
+//Is important to enable only when communicating with the device via wifi
+//and remember to disable it when disconnecting from device.
+wifi.forceWifiUsage(true);
