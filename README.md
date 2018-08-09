@@ -76,7 +76,7 @@ wifi.findAndConnect(ssid, password, (found) => {
 });
 ```
 
-Disconnect current wifi network
+Disconnect from current wifi network
 ```javascript
 wifi.disconnect();
 ```
