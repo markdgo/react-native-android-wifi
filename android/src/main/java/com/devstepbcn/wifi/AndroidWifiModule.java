@@ -106,19 +106,19 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    canWriteFlag = Settings.System.canWrite(context);
+                    canWriteFlag = Settings.System.canWrite(reactContext);
 
                     if (!canWriteFlag) {
                         Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                        intent.setData(Uri.parse("package:" + context.getPackageName()));
+                        intent.setData(Uri.parse("package:" + reactContext.getPackageName()));
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                        context.startActivity(intent);
+                        reactContext.startActivity(intent);
                     }
                 }
 
                 if (((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && canWriteFlag) || ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) && !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M))) {
-                    final ConnectivityManager manager = (ConnectivityManager) context
+                    final ConnectivityManager manager = (ConnectivityManager) reactContext
                             .getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkRequest.Builder builder;
                     builder = new NetworkRequest.Builder();
@@ -146,7 +146,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
             }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ConnectivityManager manager = (ConnectivityManager) context
+                ConnectivityManager manager = (ConnectivityManager) reactContext
                         .getSystemService(Context.CONNECTIVITY_SERVICE);
                 manager.bindProcessToNetwork(null);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
