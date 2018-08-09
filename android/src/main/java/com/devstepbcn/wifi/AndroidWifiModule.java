@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 import java.util.List;
 import java.lang.Thread;
+import android.net.DhcpInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
