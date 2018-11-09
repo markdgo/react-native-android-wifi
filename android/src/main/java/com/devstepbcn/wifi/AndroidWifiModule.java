@@ -211,7 +211,6 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
     	// Quote ssid and password
 		conf.SSID = String.format("\"%s\"", ssid);
-    	conf.preSharedKey = String.format("\"%s\"", password);
 	
     	WifiConfiguration tempConfig = this.IsExist(conf.SSID);
 		if (tempConfig != null) {
@@ -238,6 +237,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 			conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
 			conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
 			conf.status = WifiConfiguration.Status.ENABLED;
+			conf.preSharedKey = String.format("\"%s\"", password);
       
 		} else if (capabilities.contains("WEP")) {
 			// This is needed for WEP
