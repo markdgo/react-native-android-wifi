@@ -173,6 +173,8 @@ Hard refresh the Android wifi scan, implemented using `BroadcastReceiver` to ens
 wifi.reScanAndLoadWifiList((wifiStringList) => {
   var wifiArray = JSON.parse(wifiStringList);
   console.log('Detected wifi networks - ',wifiArray);
+},(error)=>{
+  console.log(error);
 });
 ```
 
