@@ -288,6 +288,79 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 		return true;
 	}
+	
+	//add configuration of hidden network and return it's networkId
+	public int setWifiConfig(String ssid, String sharedKey) {
+		WifiConfiguration conf = new WifiConfiguration();
+
+		conf.SSID = "\"" + ssid + "\"";
+		conf.preSharedKey = "\"" + sharedKey + "\"";
+	
+		conf.hiddenSSID = true;
+		conf.status = WifiConfiguration.Status.ENABLED;
+		conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+		conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+		conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+		conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+		conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+		conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+		conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+	
+		return wifi.addNetwork(conf);
+	}
+
+	//Add a hidden wifi network and connect to it
+	//Example:  wifi.connectToHiddenNetwork(ssid, password, (networkAdded) => {});
+	//Callback returns true if network added and tried to connect to it successfully
+	//It may take up to 15s to connect to hidden networks
+	@ReactMethod
+	public void connectToHiddenNetwork(String ssid, String password, Callback networkAdded) {
+		List<WifiConfiguration> list = wifi.getConfiguredNetworks();
+		int updateNetwork = -1;
+
+		// check if network config exists and it's hidden
+		for (WifiConfiguration wifiConfig : list) {
+			if (wifiConfig.SSID.equals("\"" + ssid + "\"") && wifiConfig.hiddenSSID) {
+				updateNetwork = wifiConfig.networkId;
+			}
+		}
+
+		// If network not already in configured networks add new network
+		if (updateNetwork == -1) {
+			updateNetwork = setWifiConfig(ssid, password);
+		}
+
+		// if network not added return false
+		if (updateNetwork == -1) {
+			networkAdded.invoke(false);
+			return;
+		}
+		
+		// disconnect current network
+		boolean disconnect = wifi.disconnect();
+		if (!disconnect) {
+			networkAdded.invoke(false);
+			return;
+		}
+
+		// enable new network
+		boolean enableNetwork = wifi.enableNetwork(updateNetwork, true);
+		if (!enableNetwork) {
+			networkAdded.invoke(false);
+			return;
+		}
+	
+		// reconnect to new network
+		boolean reconnect = wifi.reconnect();
+		if (!reconnect) {
+			networkAdded.invoke(false);
+			return;
+		}
+
+		wifi.saveConfiguration();
+
+		networkAdded.invoke(true);
+	}
 
 	//Disconnect current Wifi.
 	@ReactMethod
