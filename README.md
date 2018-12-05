@@ -184,3 +184,12 @@ Method to force wifi usage. Android by default sends all requests via mobile dat
 //Is important to enable only when communicating with the device via wifi
 //and remember to disable it when disconnecting from device.
 wifi.forceWifiUsage(true);
+```
+
+
+Add a hidden wifi network and connect to it
+``` javascript
+//Callback returns true if network added and tried to connect to it successfully
+//It may take up to 15s to connect to hidden networks
+wifi.connectToHiddenNetwork(ssid, password, (networkAdded) => {});
+```
