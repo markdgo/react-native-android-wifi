@@ -106,7 +106,10 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
         if (useWifi) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    canWriteFlag = true;
+                    // Only need ACTION_MANAGE_WRITE_SETTINGS on 6.0.0, regular permissions suffice on later versions
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     canWriteFlag = Settings.System.canWrite(reactContext);
 
                     if (!canWriteFlag) {
@@ -520,4 +523,3 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		}
 	}
 }
-
