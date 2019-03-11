@@ -14,7 +14,7 @@ npm install react-native-android-wifi --save
 ### Install the native dependencies
 Use react-native link to install native dependencies automatically:
 ```bash
-react-native link
+react-native link react-native-android-wifi
 ```
 or do it manually as described [here](docs/link-manually.md).
 
@@ -22,6 +22,26 @@ or do it manually as described [here](docs/link-manually.md).
 
 ```javascript
 import wifi from 'react-native-android-wifi';
+```
+
+Permissions: Starting with Android API 25, apps must be granted the ACCESS_COARSE_LOCATION (or ACCESS_FINE_LOCATION) permission in order to obtain results.
+```javascript
+try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          'title': 'Wifi networks',
+          'message': 'We need your permission in order to find wifi networks'
+        }
+      )
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Thank you for your permission! :)");
+      } else {
+        console.log("You will not able to retrieve wifi available networks list");
+      }
+    } catch (err) {
+      console.warn(err)
+    }
 ```
 
 Wifi connectivity status:
@@ -43,6 +63,7 @@ wifi.setEnabled(true);
 
 Sign device into a specific network:
 > This method doesn't have a callback when connection succeeded, check [this](https://github.com/devstepbcn/react-native-android-wifi/issues/4) issue.
+Added support for 'WPA2 PSK' wifi security mode and handling SSID for Lollipop and Kitkat.
 
 ```javascript
 //found returns true if ssid is in the range
@@ -55,7 +76,7 @@ wifi.findAndConnect(ssid, password, (found) => {
 });
 ```
 
-Disconnect current wifi network
+Disconnect from current wifi network
 ```javascript
 wifi.disconnect();
 ```
@@ -130,8 +151,16 @@ wifi.getIP((ip) => {
   console.log(ip);
 });
 ```
+Get DHCP Server Adress
+```javascript
+//get the DHCP server IP
+wifi.getDhcpServerAddress((ip) => {
+  console.log(ip);
+});
+```
 
 Remove/Forget the Wifi network from mobile by SSID, returns boolean
+This method will remove the wifi network as per the passed SSID from the device list.
 ``` javascript
 wifi.isRemoveWifiNetwork(ssid, (isRemoved) => {
   console.log("Forgetting the wifi device - " + ssid);
@@ -139,10 +168,13 @@ wifi.isRemoveWifiNetwork(ssid, (isRemoved) => {
 ```
 
 Starts native Android wifi network scanning and returns list
+Hard refresh the Android wifi scan, implemented using `BroadcastReceiver` to ensure that it automatically detects new wifi connections available.
 ``` javascript
 wifi.reScanAndLoadWifiList((wifiStringList) => {
   var wifiArray = JSON.parse(wifiStringList);
   console.log('Detected wifi networks - ',wifiArray);
+},(error)=>{
+  console.log(error);
 });
 ```
 
@@ -152,3 +184,12 @@ Method to force wifi usage. Android by default sends all requests via mobile dat
 //Is important to enable only when communicating with the device via wifi
 //and remember to disable it when disconnecting from device.
 wifi.forceWifiUsage(true);
+```
+
+
+Add a hidden wifi network and connect to it
+``` javascript
+//Callback returns true if network added and tried to connect to it successfully
+//It may take up to 15s to connect to hidden networks
+wifi.connectToHiddenNetwork(ssid, password, (networkAdded) => {});
+```
