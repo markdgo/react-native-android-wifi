@@ -159,6 +159,18 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
         }
     }
 
+	//Use this method to make sure that your forced network already bound
+	@ReactMethod
+	public void connectionStatusOfBoundNetwork(Callback connectionStatusResult) {
+		ConnectivityManager connManager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+		Network network = connManager.getBoundNetworkForProcess();
+		if (network != null) {
+			connectionStatusResult.invoke(true);
+		} else {
+			connectionStatusResult.invoke(false);
+		}
+	}
+
 	//Method to check if wifi is enabled
 	@ReactMethod
 	public void isEnabled(Callback isEnabled) {
